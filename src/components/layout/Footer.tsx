@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { Logo } from "./Logo";
 import { NewsletterForm } from "@/components/forms/NewsletterForm";
@@ -11,8 +13,10 @@ import {
   socialIcons,
 } from "@/components/ui/Icons";
 import { nav, services, site } from "@/lib/site";
+import { useLang } from "@/lib/i18n";
 
 export function Footer() {
+  const { t } = useLang();
   const year = new Date().getFullYear();
 
   return (
@@ -35,11 +39,11 @@ export function Footer() {
             <div>
               <Logo tone="dark" id="ftr" />
               <p className="mt-5 max-w-sm text-sm leading-relaxed text-lilac-100/70">
-                {site.positioningFr}
+                {t(site.positioning)}
               </p>
               <p className="mt-5 inline-flex items-center gap-2 rounded-full bg-mint-400/12 px-3.5 py-2 text-xs font-semibold text-mint-200 ring-1 ring-mint-400/25">
                 <IconRecycle className="size-4" />
-                Produits certifiés UL ECOLOGO & Green Seal
+                {t({ fr: "Produits certifiés UL ECOLOGO & Green Seal", en: "UL ECOLOGO & Green Seal certified products" })}
               </p>
 
               <div className="mt-6 flex items-center gap-2.5">
@@ -61,9 +65,9 @@ export function Footer() {
               </div>
             </div>
 
-            <nav aria-label="Liens rapides">
+            <nav aria-label={t({ fr: "Liens rapides", en: "Quick links" })}>
               <h3 className="font-display text-base font-bold text-white">
-                Liens rapides
+                {t({ fr: "Liens rapides", en: "Quick links" })}
               </h3>
               <ul className="mt-5 flex flex-col gap-3 text-sm">
                 {nav.map((item) => (
@@ -72,7 +76,7 @@ export function Footer() {
                       href={item.href}
                       className="text-lilac-100/70 transition-colors hover:text-mint-300"
                     >
-                      {item.label}
+                      {t(item.label)}
                     </Link>
                   </li>
                 ))}
@@ -81,7 +85,7 @@ export function Footer() {
                     href="/contact#booking"
                     className="text-lilac-100/70 transition-colors hover:text-mint-300"
                   >
-                    Demander une soumission
+                    {t({ fr: "Demander une soumission", en: "Request a quote" })}
                   </Link>
                 </li>
               </ul>
@@ -98,7 +102,7 @@ export function Footer() {
                       href={`/services#${s.slug}`}
                       className="text-lilac-100/70 transition-colors hover:text-mint-300"
                     >
-                      {s.titleFr}
+                      {t(s.title)}
                     </Link>
                   </li>
                 ))}
@@ -107,7 +111,7 @@ export function Footer() {
 
             <div>
               <h3 className="font-display text-base font-bold text-white">
-                Nous joindre
+                {t({ fr: "Nous joindre", en: "Get in touch" })}
               </h3>
               <ul className="mt-5 flex flex-col gap-4 text-sm">
                 <li>
@@ -134,7 +138,7 @@ export function Footer() {
                 </li>
                 <li className="flex items-start gap-3 text-lilac-100/70">
                   <IconClock className="mt-0.5 size-4 shrink-0 text-mint-300" />
-                  {site.hoursFr}
+                  {t(site.hours)}
                 </li>
               </ul>
 
@@ -142,7 +146,7 @@ export function Footer() {
                 Newsletter
               </h3>
               <p className="mt-2 mb-3 text-sm text-lilac-100/60">
-                Un conseil d’entretien utile par mois. Rien d’autre.
+                {t({ fr: "Un conseil d’entretien utile par mois. Rien d’autre.", en: "One genuinely useful cleaning tip a month. Nothing else." })}
               </p>
               <NewsletterForm />
             </div>
@@ -150,14 +154,14 @@ export function Footer() {
 
           <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-7 text-xs text-lilac-100/55 sm:flex-row">
             <p>
-              © {year} {site.name}. Tous droits réservés.
+              © {year} {site.name}. {t({ fr: "Tous droits réservés.", en: "All rights reserved." })}
             </p>
             <div className="flex items-center gap-6">
               <Link href="/contact" className="transition-colors hover:text-mint-300">
-                Confidentialité
+                {t({ fr: "Confidentialité", en: "Privacy" })}
               </Link>
               <Link href="/contact" className="transition-colors hover:text-mint-300">
-                Conditions
+                {t({ fr: "Conditions", en: "Terms" })}
               </Link>
             </div>
           </div>

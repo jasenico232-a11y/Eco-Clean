@@ -347,6 +347,38 @@ p {
   }
 }
 
+/* Sparkle twinkle — the "just-cleaned" glint. Scales up, turns a little, and
+   leaves. Staggered across several instances so it reads as a scatter rather
+   than a single pop. */
+@keyframes eco-sparkle {
+  0% {
+    transform: translate(-50%, -50%) scale(0) rotate(0deg);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  55% {
+    transform: translate(-50%, -50%) scale(1) rotate(70deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(0.15) rotate(140deg);
+    opacity: 0;
+  }
+}
+
+/* Squeegee sweep — a specular band travelling across a freshly "cleaned"
+   surface. Runs once when a card is activated. */
+@keyframes eco-sweep {
+  from {
+    transform: translateX(-140%) skewX(-18deg);
+  }
+  to {
+    transform: translateX(240%) skewX(-18deg);
+  }
+}
+
 @utility animate-float {
   animation: eco-float 6s var(--ease-soft) infinite;
 }

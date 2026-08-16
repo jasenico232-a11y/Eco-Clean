@@ -2,7 +2,7 @@
 
 Marketing site for a certified green cleaning company in **Dieppe, New
 Brunswick**, built with Next.js 16 (App Router), React 19, TypeScript and
-Tailwind CSS v4. The site leads in French with English alongside.
+Tailwind CSS v4. French is the default language, with an FR/EN toggle.
 
 > ## ⚠️ Read before editing any copy
 >
@@ -26,10 +26,10 @@ Tailwind CSS v4. The site leads in French with English alongside.
 > The full rule set lives at the top of `src/lib/site.ts`. Source: operations
 > manual §A1.
 
-Interaction feedback is tiered: ordinary controls get a contained press sheen,
-and soap bubbles are reserved for two moments — reaching the final call to
-action, and completing a booking. Nothing is ambient; the screen always
-returns to clean within ~5 seconds.
+Interaction feedback is tiered: pressable surfaces answer at the point of
+contact with a sheen and sparkle glints, and soap bubbles are reserved for two
+moments — reaching the final call to action, and completing a booking. Nothing
+is ambient; the screen always returns to clean within ~5 seconds.
 
 ## Getting started
 
@@ -74,24 +74,34 @@ scales with the weight of the action:
 
 | Tier | Where | Effect |
 | ---- | ----- | ------ |
-| Ordinary | Every `<Button>`, nav links, FAQ rows, service cards | Press sheen inside the control; no particles |
+| Press | Every `<Button>` and service card | Sheen + sparkle scatter from the contact point |
+| Activation | Service card opened | Squeegee shine sweep across the card |
 | Milestone | Final CTA scrolled into view | Bubble cloud, **once per page view** |
 | Milestone | Booking sent, newsletter joined | Bubble cloud with a splash |
 
-Bubbles are **not** triggered by clicking. Expanding a service card is
-browsing, not an achievement — the tinted wash and expand animation carry it.
-The scroll trigger (`BubbleReveal`) fires **once per page view** on purpose: an
-effect that re-fires whenever the element re-enters the viewport becomes
-ambient noise the moment someone scrolls up and back down.
+**Press feedback** lives in `usePressFeedback` (`ui/PressFeedback.tsx`) and is
+shared by buttons and cards so every pressable surface answers the same way.
+Two layers fire from the exact point of contact: a radial **sheen** clipped by
+the element's own border radius, and a scatter of four-point **sparkle**
+glints. Because both are bounded by the element, the press reads as the surface
+reacting rather than as particles thrown over the UI. Keyboard activation
+reports `(0,0)`, so those originate from the centre.
 
-**Tier 1 — the sheen.** A radial wipe expands from the exact point of contact,
-clipped by the button's own border radius (`eco-sheen` in `globals.css`, driven
-by `Button.tsx`). Because it is bounded by the control and tinted per variant,
-it reads as the *surface reacting to a press* rather than as particles thrown
-over the top of the UI. Keyboard activation reports `(0,0)`, so those start
-from the centre instead.
+The hook measures the pointer against `currentTarget`, so each card owns its
+own instance — a single shared instance at section level would render the sheen
+in the wrong card. That is why `ServiceCard` is split out of `Services`.
 
-**Tier 2 — bubbles.** Reserved for the two moments that earn them.
+**`ShineSweep`** is the "just-cleaned" pass: a specular band travelling across
+the card when it opens, keyed on an activation counter so it replays each time.
+
+**Bubbles are never triggered by clicking.** Opening a service card is
+browsing, not an achievement. The scroll trigger (`BubbleReveal`) fires **once
+per page view** on purpose: an effect that re-fires whenever the element
+re-enters the viewport becomes ambient noise the moment someone scrolls up and
+back down.
+
+Everything above is suppressed under `prefers-reduced-motion` via
+`motion-reduce:hidden` and the engine's own reduced-motion guard.
 
 ### Bubbles
 
@@ -198,11 +208,25 @@ hourly for residential work — with a $150 minimum per visit.
 
 ### Bilingual approach
 
-Dieppe is roughly two-thirds mainly French-speaking, so the site leads in
-French (`<html lang="fr-CA">`) with English alongside on headings, service
-names and process steps. This is **not** a full i18n setup — there is no locale
-router or translation catalogue, and body copy is French only. A proper
-`next-intl` FR/EN implementation is the natural next step.
+Dieppe is roughly two-thirds mainly French-speaking, so **French is the default
+and the served language**, with an FR/EN toggle in the header and mobile drawer.
+
+Copy lives as `{ fr, en }` pairs and is resolved with `t()` from
+`@/lib/i18n`. The language lives in a small external store read through
+`useSyncExternalStore`, because the server cannot know the visitor's stored
+preference: it always renders French, and the saved choice is applied
+immediately after mount. English speakers therefore see one frame of French on
+a cold load — the trade for keeping this a fully static site. The choice
+persists in `localStorage` and updates `<html lang>`.
+
+**Limits worth knowing.** This is a UI-level toggle, not true multilingual
+routing. There is one URL per page, metadata and structured data are French
+only, and there is no `hreflang`. Search engines only ever index the French
+copy. For an indexable English site — per-locale URLs, translated metadata,
+`hreflang` pairs — this should graduate to `next-intl` with locale routing.
+
+Pages that need `metadata` keep a server `page.tsx` shell that renders a client
+`content.tsx`, since client components cannot export metadata.
 
 ## Wiring up a backend
 

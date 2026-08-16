@@ -1,7 +1,10 @@
+"use client";
+
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { CloudDivider } from "@/components/ui/Dividers";
 import { IconSparkle } from "@/components/ui/Icons";
+import { useLang } from "@/lib/i18n";
 
 /** Compact banner for inner pages — same brand gradient, less height. */
 export function PageHero({
@@ -17,6 +20,8 @@ export function PageHero({
   breadcrumb: string;
   children?: ReactNode;
 }) {
+  const { t } = useLang();
+
   return (
     <section className="relative isolate overflow-hidden bg-brand-gradient">
       <div
@@ -33,11 +38,11 @@ export function PageHero({
       />
 
       <div className="relative container-page pt-14 pb-24 sm:pt-16 lg:pt-20 lg:pb-36">
-        <nav aria-label="Breadcrumb" className="mb-6">
+        <nav aria-label={t({ fr: "Fil d’Ariane", en: "Breadcrumb" })} className="mb-6">
           <ol className="flex items-center gap-2 text-xs font-semibold text-lilac-100/75">
             <li>
               <Link href="/" className="transition-colors hover:text-white">
-                Home
+                {t({ fr: "Accueil", en: "Home" })}
               </Link>
             </li>
             <li aria-hidden="true">/</li>

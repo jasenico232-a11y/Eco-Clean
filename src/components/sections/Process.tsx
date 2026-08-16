@@ -1,8 +1,12 @@
+"use client";
+
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { RevealGroup, RevealItem } from "@/components/ui/Reveal";
 import { processSteps } from "@/lib/site";
+import { useLang } from "@/lib/i18n";
 
 export function Process() {
+  const { t } = useLang();
   return (
     <section className="relative overflow-hidden bg-lilac-50/60 py-20 lg:py-28">
       <div
@@ -17,9 +21,9 @@ export function Process() {
       <div className="relative container-page">
         <SectionHeading
           align="center"
-          eyebrow="Comment ça marche"
-          title="Quatre étapes, du premier appel au résultat"
-          description="Pas de visite commerciale, pas d'attente de trois semaines. Réponse en moins de deux heures ouvrables et soumission écrite le jour même."
+          eyebrow={t({ fr: "Comment ça marche", en: "How it works" })}
+          title={t({ fr: "Quatre étapes, du premier appel au résultat", en: "Four steps from first call to finished job" })}
+          description={t({ fr: "Pas de visite commerciale, pas d'attente de trois semaines. Réponse en moins de deux heures ouvrables et soumission écrite le jour même.", en: "No sales visit, no three-week wait. A reply within two working hours and a written quote the same day." })}
         />
 
         <RevealGroup
@@ -43,16 +47,10 @@ export function Process() {
                   />
                 </span>
                 <h3 className="font-display mt-6 text-lg font-bold text-ink">
-                  {step.titleFr}
+                  {t(step.title)}
                 </h3>
-                <p
-                  lang="en"
-                  className="mt-1 text-[0.75rem] font-semibold text-lilac-600"
-                >
-                  {step.titleEn}
-                </p>
                 <p className="mt-2.5 text-sm leading-relaxed text-ink-muted">
-                  {step.body}
+                  {t(step.body)}
                 </p>
               </div>
             </RevealItem>

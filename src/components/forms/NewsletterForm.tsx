@@ -5,6 +5,7 @@ import type { FormEvent } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useBubbles } from "@/components/bubbles/BubbleProvider";
 import { IconArrowRight, IconCheck } from "@/components/ui/Icons";
+import { useLang } from "@/lib/i18n";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -12,6 +13,7 @@ export function NewsletterForm() {
   const [email, setEmail] = useState("");
   const [state, setState] = useState<"idle" | "error" | "done">("idle");
   const { burst } = useBubbles();
+  const { t } = useLang();
 
   const submit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -44,7 +46,7 @@ export function NewsletterForm() {
             className="flex items-center gap-2.5 rounded-full bg-mint-400/15 px-4 py-3 text-sm font-semibold text-mint-200 ring-1 ring-mint-400/40"
           >
             <IconCheck className="size-4 shrink-0" />
-            C’est fait. Surveillez notre premier conseil.
+            {t({ fr: "C’est fait. Surveillez notre premier conseil.", en: "You are on the list. Watch for our first tip." })}
           </motion.p>
         ) : (
           <motion.form
@@ -56,7 +58,7 @@ export function NewsletterForm() {
             className="flex items-center gap-2 rounded-full bg-white/8 p-1.5 ring-1 ring-white/20 focus-within:ring-lilac-300"
           >
             <label htmlFor="newsletter-email" className="sr-only">
-              Email address
+              {t({ fr: "Courriel", en: "Email address" })}
             </label>
             <input
               id="newsletter-email"
@@ -64,7 +66,7 @@ export function NewsletterForm() {
               inputMode="email"
               autoComplete="email"
               value={email}
-              placeholder="Courriel"
+              placeholder={t({ fr: "Votre courriel", en: "Your email" })}
               onChange={(e) => {
                 setEmail(e.target.value);
                 if (state === "error") setState("idle");
@@ -76,7 +78,7 @@ export function NewsletterForm() {
               type="submit"
               className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-mint-400 px-4 py-2 text-sm font-bold text-lilac-950 transition-transform duration-300 hover:scale-105 active:scale-95"
             >
-              S’abonner
+              {t({ fr: "S’abonner", en: "Subscribe" })}
               <IconArrowRight className="size-3.5" />
             </button>
           </motion.form>
@@ -85,7 +87,7 @@ export function NewsletterForm() {
 
       {state === "error" ? (
         <p className="mt-2 pl-4 text-xs font-medium text-orchid-300">
-          Veuillez entrer un courriel valide.
+          {t({ fr: "Veuillez entrer un courriel valide.", en: "Please enter a valid email address." })}
         </p>
       ) : null}
     </div>

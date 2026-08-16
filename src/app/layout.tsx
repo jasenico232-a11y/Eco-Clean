@@ -4,6 +4,7 @@ import "./globals.css";
 
 import { MotionProvider } from "@/components/motion/MotionProvider";
 import { BubbleProvider } from "@/components/bubbles/BubbleProvider";
+import { LanguageProvider } from "@/lib/i18n";
 import { BubbleField } from "@/components/bubbles/BubbleField";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -26,7 +27,7 @@ const heading = Outfit({
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name} — ${site.taglineFr}`,
+    default: `${site.name} — ${site.tagline.fr}`,
     template: `%s · ${site.name}`,
   },
   description: site.description,
@@ -45,14 +46,14 @@ export const metadata: Metadata = {
     siteName: site.name,
     locale: "fr_CA",
     alternateLocale: "en_CA",
-    title: `${site.name} — ${site.taglineFr}`,
-    description: site.positioningFr,
+    title: `${site.name} — ${site.tagline.fr}`,
+    description: site.positioning.fr,
     url: site.url,
   },
   twitter: {
     card: "summary_large_image",
-    title: `${site.name} — ${site.taglineFr}`,
-    description: site.positioningFr,
+    title: `${site.name} — ${site.tagline.fr}`,
+    description: site.positioning.fr,
   },
   robots: { index: true, follow: true },
 };
@@ -69,7 +70,7 @@ const jsonLd = {
   "@type": "HomeAndConstructionBusiness",
   additionalType: "https://schema.org/ProfessionalService",
   name: site.name,
-  description: site.positioningFr,
+  description: site.positioning.fr,
   telephone: site.phone,
   email: site.email,
   url: site.url,
@@ -104,6 +105,7 @@ export default function RootLayout({
           // Static, author-controlled payload — no user input reaches this.
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        <LanguageProvider>
         <MotionProvider>
         <BubbleProvider>
           <BubbleField />
@@ -114,6 +116,7 @@ export default function RootLayout({
           <Footer />
         </BubbleProvider>
         </MotionProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

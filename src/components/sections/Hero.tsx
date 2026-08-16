@@ -20,10 +20,12 @@ import {
   IconShield,
   IconSparkle,
 } from "@/components/ui/Icons";
+import { useLang } from "@/lib/i18n";
 
 export function Hero() {
   const ref = useRef<HTMLElement>(null);
   const reduce = useReducedMotion();
+  const { t } = useLang();
 
   // Pointer parallax for the decorative layer.
   const mx = useMotionValue(0);
@@ -98,7 +100,7 @@ export function Hero() {
               className="inline-flex items-center gap-2 rounded-full bg-white/14 px-4 py-2 text-xs font-semibold tracking-[0.14em] text-white uppercase ring-1 ring-white/25 backdrop-blur-sm"
             >
               <IconSparkle className="size-3.5 text-mint-300" />
-              Certifié ECOLOGO &amp; Green Seal
+              {t({ fr: "Certifié ECOLOGO & Green Seal", en: "ECOLOGO & Green Seal certified" })}
             </motion.span>
 
             <motion.h1
@@ -111,8 +113,10 @@ export function Hero() {
               }}
               className="mt-6 text-[2.6rem] leading-[1.05] font-extrabold text-white sm:text-6xl lg:text-[4.1rem]"
             >
-              Nettoyage certifié
-              <br className="hidden sm:block" /> écologique à{" "}
+              {t({
+                fr: "Nettoyage certifié écologique à ",
+                en: "Certified green cleaning in ",
+              })}
               <span className="relative inline-block">
                 <span className="relative z-10">Dieppe</span>
                 <svg
@@ -132,9 +136,7 @@ export function Hero() {
               </span>
             </motion.h1>
 
-            {/* English alongside, as §A1 requires — French leads, English follows. */}
             <motion.p
-              lang="en"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{
@@ -144,7 +146,10 @@ export function Hero() {
               }}
               className="mt-4 text-lg font-semibold text-mint-200 sm:text-xl"
             >
-              Certified green cleaning for Dieppe families, daycares and clinics
+              {t({
+                fr: "Au service des familles, garderies et cliniques de Dieppe",
+                en: "For Dieppe families, daycares and clinics",
+              })}
             </motion.p>
 
             <motion.p
@@ -157,10 +162,10 @@ export function Hero() {
               }}
               className="mt-6 max-w-xl text-[1.05rem] leading-relaxed text-lilac-50/85 sm:text-lg"
             >
-              Tous nos produits portent la certification UL ECOLOGO ou Green
-              Seal — certificats et fiches signalétiques sur demande. Filtration
-              HEPA, formulations à faible COV, gamme sans parfum offerte. Prix
-              fixe écrit le jour même, reprise gratuite sous 48 heures.
+              {t({
+                fr: "Tous nos produits portent la certification UL ECOLOGO ou Green Seal — certificats et fiches signalétiques sur demande. Filtration HEPA, formulations à faible COV, gamme sans parfum offerte. Prix fixe écrit le jour même, reprise gratuite sous 48 heures.",
+                en: "Every product we use carries UL ECOLOGO or Green Seal certification — certificates and safety data sheets on request. HEPA filtration, low-VOC formulations, fragrance-free line available. Written flat price the same day, free redo within 48 hours.",
+              })}
             </motion.p>
 
             <motion.div
@@ -179,10 +184,10 @@ export function Hero() {
                 variant="mint"
                 icon={<IconArrowRight className="size-3.5" />}
               >
-                Demander une soumission
+                {t({ fr: "Demander une soumission", en: "Request a quote" })}
               </Button>
               <Button href="/services" size="lg" variant="ghost">
-                Voir nos services
+                {t({ fr: "Voir nos services", en: "See our services" })}
               </Button>
             </motion.div>
 
@@ -201,15 +206,15 @@ export function Hero() {
             >
               <span className="inline-flex items-center gap-1.5">
                 <IconLeaf className="size-4 text-mint-300" />
-                Produits certifiés ECOLOGO &amp; Green Seal
+                {t({ fr: "Produits certifiés ECOLOGO & Green Seal", en: "ECOLOGO & Green Seal certified products" })}
               </span>
               <span className="inline-flex items-center gap-1.5">
                 <IconShield className="size-4 text-mint-300" />
-                Assurance responsabilité 2 M$
+                {t({ fr: "Assurance responsabilité 2 M$", en: "$2M liability cover" })}
               </span>
               <span className="inline-flex items-center gap-1.5">
                 <IconRecycle className="size-4 text-mint-300" />
-                Filtration HEPA · faible COV
+                {t({ fr: "Filtration HEPA · faible COV", en: "HEPA filtration · low-VOC" })}
               </span>
             </motion.div>
           </div>
@@ -224,7 +229,7 @@ export function Hero() {
             <Scene
               tone="deep"
               seed={3}
-              label="Illustration d'une équipe Eco-Clean au travail"
+              label={t({ fr: "Illustration d'une équipe Eco-Clean au travail", en: "Illustration of an Eco-Clean crew at work" })}
               icon={<IconBubble />}
               className="aspect-[4/3.4] w-full shadow-[var(--shadow-lift)] ring-1 ring-white/25 sm:aspect-[4/3]"
             />
@@ -239,7 +244,7 @@ export function Hero() {
               </span>
               <span className="leading-tight">
                 <span className="block text-sm font-bold text-ink">
-                  Certifié
+                  {t({ fr: "Certifié", en: "Certified" })}
                 </span>
                 <span className="block text-[0.7rem] text-ink-muted">
                   ECOLOGO & Green Seal
@@ -252,10 +257,10 @@ export function Hero() {
               className="absolute -top-4 -right-1 rounded-2xl bg-white/95 px-4 py-3 text-center shadow-[var(--shadow-lift)] backdrop-blur sm:-right-5"
             >
               <span className="text-gradient block text-xl font-extrabold">
-                48 h
+                {t({ fr: "48 h", en: "48 hrs" })}
               </span>
               <span className="block text-[0.68rem] font-semibold text-ink-muted">
-                Reprise gratuite
+                {t({ fr: "Reprise gratuite", en: "Free redo" })}
               </span>
             </motion.div>
           </motion.div>
@@ -270,7 +275,7 @@ export function Hero() {
           className="mt-14 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-medium text-lilac-50/80 ring-1 ring-white/20 backdrop-blur-sm"
         >
           <IconPin className="size-4 text-mint-300" />
-          Dieppe · Moncton · Riverview — service en français, en anglais au besoin
+          {t({ fr: "Dieppe · Moncton · Riverview — service en français, en anglais au besoin", en: "Dieppe · Moncton · Riverview — served in French, English on request" })}
         </motion.p>
       </div>
 

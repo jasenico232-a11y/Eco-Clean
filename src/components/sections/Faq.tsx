@@ -6,10 +6,12 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Button } from "@/components/ui/Button";
 import { IconArrowRight, IconChevronDown } from "@/components/ui/Icons";
 import { faqs } from "@/lib/site";
+import { useLang } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 export function Faq() {
   const [open, setOpen] = useState<number | null>(0);
+  const { t } = useLang();
 
   return (
     <section className="relative mesh-soft py-20 lg:py-28">
@@ -17,9 +19,9 @@ export function Faq() {
         <div className="grid gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
           <div className="lg:sticky lg:top-28 lg:self-start">
             <SectionHeading
-              eyebrow="Good to know"
-              title="Questions we get asked every week"
-              description="If yours is not here, call us — a real person picks up between 7am and 7pm."
+              eyebrow={t({ fr: "Bon à savoir", en: "Good to know" })}
+              title={t({ fr: "Les questions qu'on nous pose chaque semaine", en: "Questions we get asked every week" })}
+              description={t({ fr: "Si la vôtre n'y est pas, appelez-nous — une vraie personne répond entre 7 h et 19 h.", en: "If yours is not here, call us — a real person picks up between 7am and 7pm." })}
             />
             <div className="mt-8">
               <Button
@@ -27,7 +29,7 @@ export function Faq() {
                 variant="secondary"
                 icon={<IconArrowRight className="size-3.5" />}
               >
-                Ask us anything
+                {t({ fr: "Posez-nous vos questions", en: "Ask us anything" })}
               </Button>
             </div>
           </div>
@@ -36,7 +38,7 @@ export function Faq() {
             {faqs.map((faq, i) => {
               const isOpen = open === i;
               return (
-                <li key={faq.q}>
+                <li key={faq.q.fr}>
                   <div
                     className={cn(
                       "overflow-hidden rounded-2xl bg-white transition-all duration-300",
@@ -59,7 +61,7 @@ export function Faq() {
                             isOpen ? "text-lilac-700" : "text-ink",
                           )}
                         >
-                          {faq.q}
+                          {t(faq.q)}
                         </span>
                         <span
                           className={cn(
@@ -89,7 +91,7 @@ export function Faq() {
                           className="overflow-hidden"
                         >
                           <p className="px-5 pb-6 text-[0.95rem] leading-relaxed text-ink-muted sm:px-6">
-                            {faq.a}
+                            {t(faq.a)}
                           </p>
                         </motion.div>
                       ) : null}

@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useRef, useState } from "react";
 import type { MouseEvent, ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { usePressFeedback, type PressTone } from "./PressFeedback";
 
 type Variant = "primary" | "secondary" | "ghost" | "dark" | "mint";
 type Size = "sm" | "md" | "lg";
@@ -56,16 +56,14 @@ const sizes: Record<Size, string> = {
   lg: "px-7 py-3.5 text-base",
 };
 
-/** Sheen tint per variant — light surfaces need a lilac wash, not white. */
-const sheen: Record<Variant, string> = {
-  primary: "rgba(255,255,255,0.85)",
-  secondary: "rgba(142,107,242,0.5)",
-  ghost: "rgba(255,255,255,0.8)",
-  dark: "rgba(169,139,251,0.75)",
-  mint: "rgba(255,255,255,0.9)",
+/** Press tone per variant — light surfaces need a lilac wash, not white. */
+const pressTone: Record<Variant, PressTone> = {
+  primary: "light",
+  secondary: "lilac",
+  ghost: "light",
+  dark: "dark",
+  mint: "mint",
 };
-
-type Sheen = { id: number; x: number; y: number; size: number };
 
 export function Button(props: AnchorProps | ButtonProps) {
   const {
@@ -77,38 +75,10 @@ export function Button(props: AnchorProps | ButtonProps) {
     fullWidth,
   } = props;
 
-  const [sheens, setSheens] = useState<Sheen[]>([]);
-  const nextId = useRef(0);
-
-  /**
-   * Press feedback lives inside the control: a sheen expands from the exact
-   * point of contact and is clipped by the button's own radius. Keyboard
-   * activation reports (0,0), so those start from the centre instead.
-   */
-  const addSheen = useCallback((e: MouseEvent<HTMLElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const fromKeyboard = e.clientX === 0 && e.clientY === 0;
-
-    const x = fromKeyboard ? rect.width / 2 : e.clientX - rect.left;
-    const y = fromKeyboard ? rect.height / 2 : e.clientY - rect.top;
-
-    // Diameter that reaches the farthest corner, so the wipe always completes.
-    const size =
-      2 *
-      Math.max(
-        Math.hypot(x, y),
-        Math.hypot(rect.width - x, y),
-        Math.hypot(x, rect.height - y),
-        Math.hypot(rect.width - x, rect.height - y),
-      );
-
-    const id = nextId.current++;
-    setSheens((s) => [...s, { id, x, y, size }]);
-  }, []);
-
-  const removeSheen = useCallback((id: number) => {
-    setSheens((s) => s.filter((r) => r.id !== id));
-  }, []);
+  // Buttons are small, so a lighter scatter keeps the glint from crowding.
+  const { press, layer } = usePressFeedback(pressTone[variant], {
+    sparkleCount: 4,
+  });
 
   const classes = cn(
     base,
@@ -120,22 +90,7 @@ export function Button(props: AnchorProps | ButtonProps) {
 
   const inner = (
     <>
-      {sheens.map((s) => (
-        <span
-          key={s.id}
-          aria-hidden="true"
-          onAnimationEnd={() => removeSheen(s.id)}
-          className="pointer-events-none absolute -z-10 rounded-full motion-reduce:hidden"
-          style={{
-            left: s.x,
-            top: s.y,
-            width: s.size,
-            height: s.size,
-            background: `radial-gradient(circle, ${sheen[variant]} 0%, ${sheen[variant]} 35%, transparent 70%)`,
-            animation: "eco-sheen 620ms cubic-bezier(0.22, 1, 0.36, 1) forwards",
-          }}
-        />
-      ))}
+      {layer}
       {icon ? (
         <span
           className={cn(
@@ -155,7 +110,7 @@ export function Button(props: AnchorProps | ButtonProps) {
   if (props.href !== undefined) {
     const { href, external, onClick } = props;
     const handle = (e: MouseEvent<HTMLAnchorElement>) => {
-      addSheen(e);
+      press(e);
       onClick?.(e);
     };
 
@@ -188,7 +143,7 @@ export function Button(props: AnchorProps | ButtonProps) {
       disabled={disabled}
       className={classes}
       onClick={(e) => {
-        addSheen(e);
+        press(e);
         onClick?.(e);
       }}
     >

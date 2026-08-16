@@ -4,9 +4,12 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import { IconArrowRight, IconPhone, IconSparkle } from "@/components/ui/Icons";
 import { site } from "@/lib/site";
+import { useLang } from "@/lib/i18n";
 import { BubbleReveal } from "@/components/bubbles/BubbleReveal";
 
 export function CtaBand() {
+  const { t } = useLang();
+
   return (
     <section className="relative bg-white py-16 lg:py-24">
       <div className="container-page">
@@ -29,7 +32,7 @@ export function CtaBand() {
               call to action scrolls into view, once per visit, then clears. */}
           <BubbleReveal
             colors={["#ffffff", "#7ff0d6", "#c6aeff", "#f9b4e6"]}
-            count={18}
+            count={28}
           />
           <span
             aria-hidden="true"
@@ -44,13 +47,13 @@ export function CtaBand() {
             <div className="max-w-2xl">
               <span className="inline-flex items-center gap-2 rounded-full bg-white/16 px-3.5 py-1.5 text-xs font-semibold tracking-[0.14em] text-white uppercase ring-1 ring-white/25">
                 <IconSparkle className="size-3.5 text-mint-300" />
-                Prêts quand vous l’êtes
+                {t({ fr: "Prêts quand vous l’êtes", en: "Ready when you are" })}
               </span>
               <h2 className="mt-5 text-3xl leading-tight font-extrabold text-white sm:text-4xl lg:text-[2.9rem]">
-                Demandez votre soumission dès aujourd’hui
+                {t({ fr: "Demandez votre soumission dès aujourd’hui", en: "Request your quote today" })}
               </h2>
               <p className="mt-4 text-[1.02rem] leading-relaxed text-lilac-50/85">
-                Dites-nous en quoi consiste l’espace et recevez un prix fixe écrit le jour même. Réponse en moins de deux heures ouvrables, en français ou en anglais.
+                {t({ fr: "Dites-nous en quoi consiste l’espace et recevez un prix fixe écrit le jour même. Réponse en moins de deux heures ouvrables, en français ou en anglais.", en: "Tell us about the space and get a written flat price the same day. A reply within two working hours, in French or English." })}
               </p>
             </div>
 
@@ -61,7 +64,7 @@ export function CtaBand() {
                 variant="mint"
                 icon={<IconArrowRight className="size-3.5" />}
               >
-                Demander une soumission
+                {t({ fr: "Demander une soumission", en: "Request a quote" })}
               </Button>
               <Button
                 href={site.phoneHref}

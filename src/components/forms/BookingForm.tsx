@@ -8,6 +8,7 @@ import { IconArrowRight, IconCheck, IconSparkle } from "@/components/ui/Icons";
 import { services } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { useBubbles } from "@/components/bubbles/BubbleProvider";
+import { useLang } from "@/lib/i18n";
 
 type Fields = {
   firstName: string;
@@ -38,22 +39,35 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const PHONE = /^[\d\s()+.-]{7,20}$/;
 
 const sizes = [
-  "Studio / 1 chambre",
-  "2–3 chambres",
-  "4 chambres ou plus",
-  "Bureau de moins de 5 000 pi²",
-  "Bureau de 5 000 pi² et plus",
+  { fr: "Studio / 1 chambre", en: "Studio / 1 bedroom" },
+  { fr: "2–3 chambres", en: "2–3 bedrooms" },
+  { fr: "4 chambres ou plus", en: "4+ bedrooms" },
+  { fr: "Bureau de moins de 5 000 pi²", en: "Office under 5,000 sq ft" },
+  { fr: "Bureau de 5 000 pi² et plus", en: "Office 5,000+ sq ft" },
 ];
 
-function validate(values: Fields): Errors {
+const messages = {
+  firstName: { fr: "Veuillez indiquer votre prénom.", en: "Please tell us your first name." },
+  lastName: { fr: "Veuillez indiquer votre nom.", en: "Please tell us your last name." },
+  email: {
+    fr: "Entrez un courriel valide pour recevoir votre soumission.",
+    en: "Enter a valid email so we can send your quote.",
+  },
+  phone: {
+    fr: "Entrez un numéro où nous pouvons vous joindre.",
+    en: "Enter a phone number we can reach you on.",
+  },
+  service: { fr: "Choisissez le service souhaité.", en: "Choose the service you need." },
+};
+
+function validate(values: Fields, t: (v: { fr: string; en: string }) => string): Errors {
   const errors: Errors = {};
-  if (!values.firstName.trim()) errors.firstName = "Veuillez indiquer votre prénom.";
-  if (!values.lastName.trim()) errors.lastName = "Veuillez indiquer votre nom.";
-  if (!EMAIL.test(values.email.trim()))
-    errors.email = "Entrez un courriel valide pour recevoir votre soumission.";
+  if (!values.firstName.trim()) errors.firstName = t(messages.firstName);
+  if (!values.lastName.trim()) errors.lastName = t(messages.lastName);
+  if (!EMAIL.test(values.email.trim())) errors.email = t(messages.email);
   if (!PHONE.test(values.phone.trim()) || values.phone.replace(/\D/g, "").length < 7)
-    errors.phone = "Entrez un numéro où nous pouvons vous joindre.";
-  if (!values.service) errors.service = "Choisissez le service souhaité.";
+    errors.phone = t(messages.phone);
+  if (!values.service) errors.service = t(messages.service);
   return errors;
 }
 
@@ -109,6 +123,7 @@ export function BookingForm() {
   const [sent, setSent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const { burst } = useBubbles();
+  const { t } = useLang();
 
   const set = <K extends keyof Fields>(key: K, value: Fields[K]) => {
     setValues((v) => ({ ...v, [key]: value }));
@@ -117,7 +132,7 @@ export function BookingForm() {
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const found = validate(values);
+    const found = validate(values, t);
     setErrors(found);
 
     if (Object.keys(found).length > 0) {
@@ -180,10 +195,10 @@ export function BookingForm() {
             </motion.span>
 
             <h3 className="font-display mt-7 text-2xl font-extrabold text-ink">
-              Demande reçue. Merci !
+              {t({ fr: "Demande reçue. Merci !", en: "Request received. Thank you!" })}
             </h3>
             <p className="mx-auto mt-3 max-w-md text-[0.98rem] leading-relaxed text-ink-muted">
-              Un responsable vous appelle en moins de deux heures ouvrables avec un prix fixe. Pas de centre d’appels, pas de musique d’attente.
+              {t({ fr: "Un responsable vous appelle en moins de deux heures ouvrables avec un prix fixe. Pas de centre d’appels, pas de musique d’attente.", en: "A named crew lead calls you within two working hours with a flat price. No call centre, no hold music." })}
             </p>
 
             <button
@@ -206,18 +221,18 @@ export function BookingForm() {
             <div>
               <span className="inline-flex items-center gap-2 rounded-full bg-lilac-100 px-3.5 py-1.5 text-xs font-bold tracking-wider text-lilac-700 uppercase">
                 <IconSparkle className="size-3.5" />
-                Nous joindre
+                {t({ fr: "Nous joindre", en: "Get in touch" })}
               </span>
               <h2 className="font-display mt-4 text-2xl font-extrabold text-ink sm:text-3xl">
-                Demandez votre soumission
+                {t({ fr: "Demandez votre soumission", en: "Request your quote" })}
               </h2>
               <p className="mt-2 text-sm leading-relaxed text-ink-muted">
-                Décrivez-nous l’espace et nous revenons avec un prix fixe en moins de deux heures ouvrables.
+                {t({ fr: "Décrivez-nous l’espace et nous revenons avec un prix fixe en moins de deux heures ouvrables.", en: "Describe the space and we come back with a flat price within two working hours." })}
               </p>
             </div>
 
             <div className="grid gap-5 sm:grid-cols-2">
-              <Field label="Prénom" htmlFor="firstName" error={errors.firstName}>
+              <Field label={t({ fr: "Prénom", en: "First name" })} htmlFor="firstName" error={errors.firstName}>
                 <input
                   id="firstName"
                   name="firstName"
@@ -231,7 +246,7 @@ export function BookingForm() {
                 />
               </Field>
 
-              <Field label="Nom" htmlFor="lastName" error={errors.lastName}>
+              <Field label={t({ fr: "Nom", en: "Last name" })} htmlFor="lastName" error={errors.lastName}>
                 <input
                   id="lastName"
                   name="lastName"
@@ -245,7 +260,7 @@ export function BookingForm() {
                 />
               </Field>
 
-              <Field label="Courriel" htmlFor="email" error={errors.email}>
+              <Field label={t({ fr: "Courriel", en: "Email" })} htmlFor="email" error={errors.email}>
                 <input
                   id="email"
                   name="email"
@@ -261,7 +276,7 @@ export function BookingForm() {
                 />
               </Field>
 
-              <Field label="Téléphone" htmlFor="phone" error={errors.phone}>
+              <Field label={t({ fr: "Téléphone", en: "Phone" })} htmlFor="phone" error={errors.phone}>
                 <input
                   id="phone"
                   name="phone"
@@ -277,7 +292,7 @@ export function BookingForm() {
                 />
               </Field>
 
-              <Field label="Service souhaité" htmlFor="service" error={errors.service}>
+              <Field label={t({ fr: "Service souhaité", en: "Service needed" })} htmlFor="service" error={errors.service}>
                 <select
                   id="service"
                   name="service"
@@ -290,13 +305,13 @@ export function BookingForm() {
                   <option value="">Select a service…</option>
                   {services.map((s) => (
                     <option key={s.slug} value={s.slug}>
-                      {s.titleFr} — {s.price}
+                      {t(s.title)} — {t(s.price)}
                     </option>
                   ))}
                 </select>
               </Field>
 
-              <Field label="Taille du logement" htmlFor="propertySize">
+              <Field label={t({ fr: "Taille du logement", en: "Property size" })} htmlFor="propertySize">
                 <select
                   id="propertySize"
                   name="propertySize"
@@ -304,17 +319,17 @@ export function BookingForm() {
                   onChange={(e) => set("propertySize", e.target.value)}
                   className={cn(control, "appearance-none")}
                 >
-                  <option value="">Facultatif…</option>
+                  <option value="">{t({ fr: "Facultatif…", en: "Optional…" })}</option>
                   {sizes.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
+                    <option key={s.fr} value={s.fr}>
+                      {t(s)}
                     </option>
                   ))}
                 </select>
               </Field>
 
               <Field
-                label="Date souhaitée"
+                label={t({ fr: "Date souhaitée", en: "Preferred date" })}
                 htmlFor="preferredDate"
                 className="sm:col-span-2"
               >
@@ -329,7 +344,7 @@ export function BookingForm() {
               </Field>
 
               <Field
-                label="Autre chose à savoir ?"
+                label={t({ fr: "Autre chose à savoir ?", en: "Anything else we should know?" })}
                 htmlFor="message"
                 className="sm:col-span-2"
               >
@@ -339,7 +354,7 @@ export function BookingForm() {
                   rows={4}
                   value={values.message}
                   onChange={(e) => set("message", e.target.value)}
-                  placeholder="Animaux, allergies, stationnement, zones problématiques, accès…"
+                  placeholder={t({ fr: "Animaux, allergies, stationnement, zones problématiques, accès…", en: "Pets, allergies, parking, problem areas, access…" })}
                   className={cn(control, "resize-y")}
                 />
               </Field>
@@ -352,10 +367,10 @@ export function BookingForm() {
                 disabled={submitting}
                 icon={<IconArrowRight className="size-3.5" />}
               >
-                {submitting ? "Envoi…" : "Envoyer ma demande"}
+                {submitting ? t({ fr: "Envoi…", en: "Sending…" }) : t({ fr: "Envoyer ma demande", en: "Send my request" })}
               </Button>
               <p className="text-xs leading-relaxed text-ink-muted">
-                Sans engagement. Vos coordonnées ne sont jamais transmises à des tiers.
+                {t({ fr: "Sans engagement. Vos coordonnées ne sont jamais transmises à des tiers.", en: "No obligation. We never pass your details to anyone." })}
               </p>
             </div>
           </motion.form>

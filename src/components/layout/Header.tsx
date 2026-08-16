@@ -16,10 +16,13 @@ import {
   socialIcons,
 } from "@/components/ui/Icons";
 import { nav, site } from "@/lib/site";
+import { useLang } from "@/lib/i18n";
+import { LanguageToggle } from "./LanguageToggle";
 import { cn } from "@/lib/utils";
 
 export function Header() {
   const pathname = usePathname();
+  const { t } = useLang();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -54,7 +57,7 @@ export function Header() {
         href="#main"
         className="sr-only-focusable fixed top-3 left-3 z-[80] rounded-full bg-lilac-700 px-4 py-2 text-sm font-semibold text-white"
       >
-        Aller au contenu
+        {t({ fr: "Aller au contenu", en: "Skip to content" })}
       </a>
 
       {/* Utility bar — hidden on small screens where the space is precious. */}
@@ -74,7 +77,7 @@ export function Header() {
             </a>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-lilac-200/70">Suivez-nous</span>
+            <span className="text-lilac-200/70">{t({ fr: "Suivez-nous", en: "Follow us" })}</span>
             {site.socials.map((s) => {
               const Icon = socialIcons[s.icon];
               return (
@@ -122,7 +125,7 @@ export function Header() {
                         : "text-ink-soft hover:text-lilac-700",
                     )}
                   >
-                    {item.label}
+                    {t(item.label)}
                     {isActive(item.href) ? (
                       <motion.span
                         layoutId="nav-pill"
@@ -151,13 +154,15 @@ export function Header() {
               </span>
               <span className="flex flex-col leading-tight">
                 <span className="text-[0.65rem] font-semibold tracking-wider text-ink-muted uppercase">
-                  Appelez-nous
+                  {t({ fr: "Appelez-nous", en: "Call now" })}
                 </span>
                 <span className="text-[0.9rem] font-bold text-ink">
                   {site.phone}
                 </span>
               </span>
             </a>
+
+            <LanguageToggle className="hidden sm:inline-flex" />
 
             {/* Wrapped rather than given `hidden` directly: the button's own
                 `inline-flex` and a `hidden` utility are the same CSS property,
@@ -168,7 +173,7 @@ export function Header() {
                 size="sm"
                 icon={<IconArrowRight className="size-3.5" />}
               >
-                Soumission
+                {t({ fr: "Soumission", en: "Get a quote" })}
               </Button>
             </span>
 
@@ -177,7 +182,7 @@ export function Header() {
               onClick={() => setOpen((v) => !v)}
               aria-expanded={open}
               aria-controls="mobile-nav"
-              aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
+              aria-label={open ? t({ fr: "Fermer le menu", en: "Close menu" }) : t({ fr: "Ouvrir le menu", en: "Open menu" })}
               className="grid size-11 place-items-center rounded-full bg-lilac-100 text-lilac-800 ring-1 ring-lilac-200 transition-transform duration-300 active:scale-90 lg:hidden"
             >
               {open ? (
@@ -221,7 +226,7 @@ export function Header() {
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
-                  aria-label="Fermer le menu"
+                  aria-label={t({ fr: "Fermer le menu", en: "Close menu" })}
                   className="grid size-10 place-items-center rounded-full bg-lilac-100 text-lilac-800 active:scale-90"
                 >
                   <IconClose className="size-5" />
@@ -248,7 +253,7 @@ export function Header() {
                           : "text-ink-soft active:bg-lilac-50",
                       )}
                     >
-                      {item.label}
+                      {t(item.label)}
                       <IconArrowRight className="size-4 opacity-50" />
                     </Link>
                   </motion.li>
@@ -262,7 +267,7 @@ export function Header() {
                   size="lg"
                   onClick={() => setOpen(false)}
                 >
-                  Demander une soumission
+                  {t({ fr: "Demander une soumission", en: "Request a quote" })}
                 </Button>
                 <a
                   href={site.phoneHref}
@@ -272,6 +277,10 @@ export function Header() {
                   <IconPhone className="size-4" />
                   {site.phone}
                 </a>
+              </div>
+
+              <div className="mt-5 flex justify-center">
+                <LanguageToggle size="lg" />
               </div>
 
               <div className="mt-5 flex items-center justify-center gap-3">
