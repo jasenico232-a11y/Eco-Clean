@@ -92,6 +92,32 @@ html {
   -webkit-text-size-adjust: 100%;
 }
 
+/**
+ * Uniform scale-up on very large viewports. Tailwind sizes and spacing are all
+ * rem-based, so nudging the root size scales type, padding and gaps together —
+ * the page zooms as one piece instead of leaving a small layout marooned in
+ * the middle of a wide screen.
+ */
+@media (width >= 120rem) {
+  html {
+    font-size: 17px;
+  }
+}
+
+@media (width >= 160rem) {
+  html {
+    font-size: 18px;
+  }
+}
+
+/* Ultrawide (3200px+). Lengths in media queries always resolve against the
+   initial 16px root, so these thresholds stay fixed as the scale steps up. */
+@media (width >= 200rem) {
+  html {
+    font-size: 20px;
+  }
+}
+
 body {
   background-color: var(--color-cloud);
   color: var(--color-ink);
@@ -139,6 +165,15 @@ p {
    Utilities
    -------------------------------------------------------------------------- */
 
+/**
+ * Page container.
+ *
+ * The max-width steps up on very wide viewports. Capping at a single 80rem
+ * left large empty margins whenever the window was wide or the page zoomed
+ * out, which read as dead space rather than as a deliberate measure. Text
+ * columns inside sections stay narrow via their own `max-w-*`, so widening
+ * the shell does not hurt line length.
+ */
 @utility container-page {
   width: 100%;
   margin-inline: auto;
@@ -147,6 +182,24 @@ p {
 
   @media (width >= 40rem) {
     padding-inline: 2rem;
+  }
+
+  @media (width >= 100rem) {
+    max-width: 88rem;
+    padding-inline: 3rem;
+  }
+
+  @media (width >= 120rem) {
+    max-width: 96rem;
+    padding-inline: 4rem;
+  }
+
+  @media (width >= 160rem) {
+    max-width: 108rem;
+  }
+
+  @media (width >= 200rem) {
+    max-width: 120rem;
   }
 }
 

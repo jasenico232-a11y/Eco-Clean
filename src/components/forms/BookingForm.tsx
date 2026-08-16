@@ -38,22 +38,22 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const PHONE = /^[\d\s()+.-]{7,20}$/;
 
 const sizes = [
-  "Studio / 1 bed",
-  "2–3 bedrooms",
-  "4+ bedrooms",
-  "Office under 5,000 sq ft",
-  "Office 5,000+ sq ft",
+  "Studio / 1 chambre",
+  "2–3 chambres",
+  "4 chambres ou plus",
+  "Bureau de moins de 5 000 pi²",
+  "Bureau de 5 000 pi² et plus",
 ];
 
 function validate(values: Fields): Errors {
   const errors: Errors = {};
-  if (!values.firstName.trim()) errors.firstName = "Please tell us your first name.";
-  if (!values.lastName.trim()) errors.lastName = "Please tell us your last name.";
+  if (!values.firstName.trim()) errors.firstName = "Veuillez indiquer votre prénom.";
+  if (!values.lastName.trim()) errors.lastName = "Veuillez indiquer votre nom.";
   if (!EMAIL.test(values.email.trim()))
-    errors.email = "Enter a valid email so we can send your quote.";
+    errors.email = "Entrez un courriel valide pour recevoir votre soumission.";
   if (!PHONE.test(values.phone.trim()) || values.phone.replace(/\D/g, "").length < 7)
-    errors.phone = "Enter a phone number we can reach you on.";
-  if (!values.service) errors.service = "Choose the service you need.";
+    errors.phone = "Entrez un numéro où nous pouvons vous joindre.";
+  if (!values.service) errors.service = "Choisissez le service souhaité.";
   return errors;
 }
 
@@ -180,11 +180,10 @@ export function BookingForm() {
             </motion.span>
 
             <h3 className="font-display mt-7 text-2xl font-extrabold text-ink">
-              Request received — nice one.
+              Demande reçue. Merci !
             </h3>
             <p className="mx-auto mt-3 max-w-md text-[0.98rem] leading-relaxed text-ink-muted">
-              A named crew lead will call you within two working hours with a
-              fixed quote. No hold music, no call centre.
+              Un responsable vous appelle en moins de deux heures ouvrables avec un prix fixe. Pas de centre d’appels, pas de musique d’attente.
             </p>
 
             <button
@@ -192,7 +191,7 @@ export function BookingForm() {
               onClick={() => setSent(false)}
               className="mt-7 text-sm font-bold text-lilac-700 underline underline-offset-4 transition-colors hover:text-lilac-900"
             >
-              Send another request
+              Envoyer une autre demande
             </button>
           </motion.div>
         ) : (
@@ -207,19 +206,18 @@ export function BookingForm() {
             <div>
               <span className="inline-flex items-center gap-2 rounded-full bg-lilac-100 px-3.5 py-1.5 text-xs font-bold tracking-wider text-lilac-700 uppercase">
                 <IconSparkle className="size-3.5" />
-                Get in touch
+                Nous joindre
               </span>
               <h2 className="font-display mt-4 text-2xl font-extrabold text-ink sm:text-3xl">
-                Book your clean in ninety seconds
+                Demandez votre soumission
               </h2>
               <p className="mt-2 text-sm leading-relaxed text-ink-muted">
-                Tell us about the space and we will come back with a fixed price
-                within two working hours.
+                Décrivez-nous l’espace et nous revenons avec un prix fixe en moins de deux heures ouvrables.
               </p>
             </div>
 
             <div className="grid gap-5 sm:grid-cols-2">
-              <Field label="First name" htmlFor="firstName" error={errors.firstName}>
+              <Field label="Prénom" htmlFor="firstName" error={errors.firstName}>
                 <input
                   id="firstName"
                   name="firstName"
@@ -228,12 +226,12 @@ export function BookingForm() {
                   onChange={(e) => set("firstName", e.target.value)}
                   aria-invalid={Boolean(errors.firstName)}
                   aria-describedby={errors.firstName ? "firstName-error" : undefined}
-                  placeholder="Jamie"
+                  placeholder="Marie"
                   className={cn(control, errors.firstName && controlError)}
                 />
               </Field>
 
-              <Field label="Last name" htmlFor="lastName" error={errors.lastName}>
+              <Field label="Nom" htmlFor="lastName" error={errors.lastName}>
                 <input
                   id="lastName"
                   name="lastName"
@@ -242,12 +240,12 @@ export function BookingForm() {
                   onChange={(e) => set("lastName", e.target.value)}
                   aria-invalid={Boolean(errors.lastName)}
                   aria-describedby={errors.lastName ? "lastName-error" : undefined}
-                  placeholder="Okonkwo"
+                  placeholder="LeBlanc"
                   className={cn(control, errors.lastName && controlError)}
                 />
               </Field>
 
-              <Field label="Email address" htmlFor="email" error={errors.email}>
+              <Field label="Courriel" htmlFor="email" error={errors.email}>
                 <input
                   id="email"
                   name="email"
@@ -258,12 +256,12 @@ export function BookingForm() {
                   onChange={(e) => set("email", e.target.value)}
                   aria-invalid={Boolean(errors.email)}
                   aria-describedby={errors.email ? "email-error" : undefined}
-                  placeholder="jamie@example.com"
+                  placeholder="marie@exemple.ca"
                   className={cn(control, errors.email && controlError)}
                 />
               </Field>
 
-              <Field label="Phone number" htmlFor="phone" error={errors.phone}>
+              <Field label="Téléphone" htmlFor="phone" error={errors.phone}>
                 <input
                   id="phone"
                   name="phone"
@@ -274,12 +272,12 @@ export function BookingForm() {
                   onChange={(e) => set("phone", e.target.value)}
                   aria-invalid={Boolean(errors.phone)}
                   aria-describedby={errors.phone ? "phone-error" : undefined}
-                  placeholder="(775) 000 0000"
+                  placeholder="(506) 000-0000"
                   className={cn(control, errors.phone && controlError)}
                 />
               </Field>
 
-              <Field label="Service type" htmlFor="service" error={errors.service}>
+              <Field label="Service souhaité" htmlFor="service" error={errors.service}>
                 <select
                   id="service"
                   name="service"
@@ -292,13 +290,13 @@ export function BookingForm() {
                   <option value="">Select a service…</option>
                   {services.map((s) => (
                     <option key={s.slug} value={s.slug}>
-                      {s.title} — {s.price}
+                      {s.titleFr} — {s.price}
                     </option>
                   ))}
                 </select>
               </Field>
 
-              <Field label="Property size" htmlFor="propertySize">
+              <Field label="Taille du logement" htmlFor="propertySize">
                 <select
                   id="propertySize"
                   name="propertySize"
@@ -306,7 +304,7 @@ export function BookingForm() {
                   onChange={(e) => set("propertySize", e.target.value)}
                   className={cn(control, "appearance-none")}
                 >
-                  <option value="">Optional…</option>
+                  <option value="">Facultatif…</option>
                   {sizes.map((s) => (
                     <option key={s} value={s}>
                       {s}
@@ -316,7 +314,7 @@ export function BookingForm() {
               </Field>
 
               <Field
-                label="Preferred date"
+                label="Date souhaitée"
                 htmlFor="preferredDate"
                 className="sm:col-span-2"
               >
@@ -331,7 +329,7 @@ export function BookingForm() {
               </Field>
 
               <Field
-                label="Anything we should know?"
+                label="Autre chose à savoir ?"
                 htmlFor="message"
                 className="sm:col-span-2"
               >
@@ -341,7 +339,7 @@ export function BookingForm() {
                   rows={4}
                   value={values.message}
                   onChange={(e) => set("message", e.target.value)}
-                  placeholder="Pets, allergies, parking, problem areas, access instructions…"
+                  placeholder="Animaux, allergies, stationnement, zones problématiques, accès…"
                   className={cn(control, "resize-y")}
                 />
               </Field>
@@ -354,10 +352,10 @@ export function BookingForm() {
                 disabled={submitting}
                 icon={<IconArrowRight className="size-3.5" />}
               >
-                {submitting ? "Sending…" : "Send my request"}
+                {submitting ? "Envoi…" : "Envoyer ma demande"}
               </Button>
               <p className="text-xs leading-relaxed text-ink-muted">
-                No obligation. We never pass your details to anyone.
+                Sans engagement. Vos coordonnées ne sont jamais transmises à des tiers.
               </p>
             </div>
           </motion.form>

@@ -54,7 +54,7 @@ export function Header() {
         href="#main"
         className="sr-only-focusable fixed top-3 left-3 z-[80] rounded-full bg-lilac-700 px-4 py-2 text-sm font-semibold text-white"
       >
-        Skip to content
+        Aller au contenu
       </a>
 
       {/* Utility bar — hidden on small screens where the space is precious. */}
@@ -63,7 +63,7 @@ export function Header() {
           <div className="flex items-center gap-6">
             <span className="inline-flex items-center gap-2">
               <IconPin className="size-3.5 text-mint-300" />
-              {site.address}
+              {site.serviceArea}
             </span>
             <a
               href={site.emailHref}
@@ -74,7 +74,7 @@ export function Header() {
             </a>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-lilac-200/70">Follow us</span>
+            <span className="text-lilac-200/70">Suivez-nous</span>
             {site.socials.map((s) => {
               const Icon = socialIcons[s.icon];
               return (
@@ -151,7 +151,7 @@ export function Header() {
               </span>
               <span className="flex flex-col leading-tight">
                 <span className="text-[0.65rem] font-semibold tracking-wider text-ink-muted uppercase">
-                  Call now
+                  Appelez-nous
                 </span>
                 <span className="text-[0.9rem] font-bold text-ink">
                   {site.phone}
@@ -168,7 +168,7 @@ export function Header() {
                 size="sm"
                 icon={<IconArrowRight className="size-3.5" />}
               >
-                Book a clean
+                Soumission
               </Button>
             </span>
 
@@ -177,7 +177,7 @@ export function Header() {
               onClick={() => setOpen((v) => !v)}
               aria-expanded={open}
               aria-controls="mobile-nav"
-              aria-label={open ? "Close menu" : "Open menu"}
+              aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
               className="grid size-11 place-items-center rounded-full bg-lilac-100 text-lilac-800 ring-1 ring-lilac-200 transition-transform duration-300 active:scale-90 lg:hidden"
             >
               {open ? (
@@ -202,7 +202,7 @@ export function Header() {
           >
             <button
               type="button"
-              aria-label="Close menu"
+              aria-label="Fermer le menu"
               className="absolute inset-0 bg-lilac-950/45 backdrop-blur-sm"
               onClick={() => setOpen(false)}
             />
@@ -221,7 +221,7 @@ export function Header() {
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
-                  aria-label="Close menu"
+                  aria-label="Fermer le menu"
                   className="grid size-10 place-items-center rounded-full bg-lilac-100 text-lilac-800 active:scale-90"
                 >
                   <IconClose className="size-5" />
@@ -262,7 +262,7 @@ export function Header() {
                   size="lg"
                   onClick={() => setOpen(false)}
                 >
-                  Book your cleaning today
+                  Demander une soumission
                 </Button>
                 <a
                   href={site.phoneHref}

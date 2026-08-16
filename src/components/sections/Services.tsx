@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import type { MouseEvent } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import { SectionHeading } from "@/components/ui/SectionHeading";
@@ -15,12 +14,11 @@ import {
 } from "@/components/ui/Icons";
 import { services, type Service } from "@/lib/site";
 import { cn } from "@/lib/utils";
-import { useBubbles } from "@/components/bubbles/BubbleProvider";
 
 export function Services({
-  heading = "Cleaning services shaped around how you actually live",
-  eyebrow = "What we do",
-  description = "Six core services, one standard. Tap any card to see exactly what is included, and what it costs before anyone sets foot in your space.",
+  heading = "Des services pensés pour Dieppe",
+  eyebrow = "Nos services",
+  description = "Six services, un seul standard. Prix fixe convenu avant que quiconque entre chez vous — jamais de tarif horaire pour le résidentiel. Facturation minimale de 150 $ par visite, avant TVH.",
   compact = false,
 }: {
   heading?: string;
@@ -29,22 +27,13 @@ export function Services({
   compact?: boolean;
 }) {
   const [active, setActive] = useState<string | null>(null);
-  const { burst } = useBubbles();
 
-  const activate = (service: Service, e: MouseEvent<HTMLElement>) => {
-    const isOpening = active !== service.slug;
-    setActive(isOpening ? service.slug : null);
-    if (!isOpening) return;
-
-    // Selecting a service is a real choice, so it earns a bubble moment in
-    // that service's own colours. It releases from the card and clears itself
-    // within a few seconds — it is punctuation, not atmosphere.
-    burst(e.clientX, e.clientY, {
-      colors: [...service.tint, "#ffffff"],
-      count: 14,
-      spread: 60,
-      splash: true,
-    });
+  // No bubble burst here any more. Expanding a card is a browsing action, not
+  // an achievement — the tinted wash, the ring and the expand animation are
+  // the feedback. Bubbles are reserved for reaching the final CTA and for a
+  // completed booking.
+  const activate = (service: Service) => {
+    setActive((current) => (current === service.slug ? null : service.slug));
   };
 
   return (
@@ -63,19 +52,22 @@ export function Services({
               variant="secondary"
               icon={<IconArrowUpRight className="size-3.5" />}
             >
-              See all services
+              Tous nos services
             </Button>
           }
         />
 
         <p className="mt-6 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-semibold text-lilac-700 ring-1 ring-lilac-200">
           <IconBubble className="size-4" />
-          Tap a card for full details and pricing
+          Touchez une carte pour le détail et le prix
         </p>
 
         <RevealGroup
           as="ul"
-          className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
+          // `items-start` is the fix for the expand bug: grid rows default to
+          // `stretch`, so an expanded card dragged every sibling in its row to
+          // the same height and left them padded with blank space.
+          className="mt-10 grid items-start gap-5 sm:grid-cols-2 lg:grid-cols-3"
         >
           {services.map((service) => {
             const Icon = serviceIcons[service.icon];
@@ -85,11 +77,11 @@ export function Services({
               <RevealItem as="li" key={service.slug}>
                 <motion.article
                   id={service.slug}
-                  onClick={(e) => activate(service, e)}
+                  onClick={() => activate(service)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
                       e.preventDefault();
-                      activate(service, e as unknown as MouseEvent<HTMLElement>);
+                      activate(service);
                     }
                   }}
                   role="button"
@@ -98,7 +90,7 @@ export function Services({
                   whileHover={{ y: -6 }}
                   transition={{ type: "spring", stiffness: 320, damping: 24 }}
                   className={cn(
-                    "group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-[1.75rem] bg-white p-6 text-left",
+                    "group relative flex cursor-pointer flex-col overflow-hidden rounded-[1.75rem] bg-white p-6 text-left",
                     "shadow-[var(--shadow-soft)] ring-1 transition-shadow duration-300",
                     isActive
                       ? "ring-2 ring-lilac-400 shadow-[var(--shadow-lift)]"
@@ -141,8 +133,14 @@ export function Services({
                   </div>
 
                   <h3 className="font-display relative mt-5 text-xl font-bold text-ink">
-                    {service.title}
+                    {service.titleFr}
                   </h3>
+                  <p
+                    lang="en"
+                    className="relative mt-1 text-[0.78rem] font-semibold text-lilac-600"
+                  >
+                    {service.titleEn}
+                  </p>
                   <p className="relative mt-2.5 text-sm leading-relaxed text-ink-muted">
                     {service.short}
                   </p>
@@ -195,7 +193,7 @@ export function Services({
                             // without this the CTA would also collapse it.
                             onClick={(e) => e.stopPropagation()}
                           >
-                            Book {service.title.toLowerCase()}
+                            Demander une soumission
                           </Button>
                         </div>
                       </motion.div>

@@ -26,29 +26,33 @@ const heading = Outfit({
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name} — ${site.tagline}`,
+    default: `${site.name} — ${site.taglineFr}`,
     template: `%s · ${site.name}`,
   },
   description: site.description,
+  // Keywords stay compliant: no unqualified "eco-friendly" or "non-toxic".
   keywords: [
-    "eco friendly cleaning",
-    "green cleaning service",
-    "house cleaning",
-    "commercial cleaning",
-    "deep cleaning",
-    "non-toxic cleaning",
+    "nettoyage Dieppe",
+    "ménage Dieppe Nouveau-Brunswick",
+    "entretien ménager Moncton",
+    "nettoyage certifié ECOLOGO",
+    "nettoyage commercial garderie clinique",
+    "cleaning services Dieppe NB",
   ],
+  alternates: { canonical: "/" },
   openGraph: {
     type: "website",
     siteName: site.name,
-    title: `${site.name} — ${site.tagline}`,
-    description: site.description,
+    locale: "fr_CA",
+    alternateLocale: "en_CA",
+    title: `${site.name} — ${site.taglineFr}`,
+    description: site.positioningFr,
     url: site.url,
   },
   twitter: {
     card: "summary_large_image",
-    title: `${site.name} — ${site.tagline}`,
-    description: site.description,
+    title: `${site.name} — ${site.taglineFr}`,
+    description: site.positioningFr,
   },
   robots: { index: true, follow: true },
 };
@@ -62,21 +66,30 @@ export const viewport: Viewport = {
 
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "LocalBusiness",
+  "@type": "HomeAndConstructionBusiness",
+  additionalType: "https://schema.org/ProfessionalService",
   name: site.name,
-  description: site.description,
+  description: site.positioningFr,
   telephone: site.phone,
   email: site.email,
   url: site.url,
+  // Mobile service business: an area served, not a storefront address.
   address: {
     "@type": "PostalAddress",
-    streetAddress: "657 Twin Lakes Drive",
-    addressLocality: "Reno",
-    addressRegion: "NV",
-    postalCode: "89523",
-    addressCountry: "US",
+    addressLocality: "Dieppe",
+    addressRegion: "NB",
+    addressCountry: "CA",
   },
+  areaServed: ["Dieppe, NB", "Moncton, NB", "Riverview, NB"].map((name) => ({
+    "@type": "City",
+    name,
+  })),
+  availableLanguage: [
+    { "@type": "Language", name: "French" },
+    { "@type": "Language", name: "English" },
+  ],
   openingHours: "Mo-Sa 07:00-19:00",
+  currenciesAccepted: "CAD",
   priceRange: "$$",
 };
 
@@ -84,7 +97,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${body.variable} ${heading.variable}`}>
+    <html lang="fr-CA" className={`${body.variable} ${heading.variable}`}>
       <body className="min-h-dvh antialiased">
         <script
           type="application/ld+json"

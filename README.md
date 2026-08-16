@@ -1,11 +1,35 @@
 # Eco-Clean
 
-Marketing site for an eco-friendly cleaning company, built with Next.js 16 (App
-Router), React 19, TypeScript and Tailwind CSS v4.
+Marketing site for a certified green cleaning company in **Dieppe, New
+Brunswick**, built with Next.js 16 (App Router), React 19, TypeScript and
+Tailwind CSS v4. The site leads in French with English alongside.
+
+> ## ⚠️ Read before editing any copy
+>
+> Canada's Competition Act (as amended by **Bill C-59**, in force June 2024)
+> places the burden of proof for environmental claims on the **advertiser**,
+> not on a regulator who has to disprove them. A private right of action before
+> the Competition Tribunal followed in June 2025.
+>
+> **Never publish:** "organic cleaning", "chemical-free", unqualified
+> "non-toxic", unqualified "eco-friendly", "100% natural", "safe for children".
+>
+> **Always phrase as:** "cleaned with UL ECOLOGO and Green Seal certified
+> products", "low-VOC formulations", "third-party certified", "HEPA
+> filtration", "fragrance-free options available".
+>
+> Volume and experience claims need substantiation too. This is a launching
+> business, so the site publishes **commitments it controls** (response time,
+> redo window, insurance cover) rather than history it cannot evidence — and no
+> testimonials, since there are no clients to quote yet.
+>
+> The full rule set lives at the top of `src/lib/site.ts`. Source: operations
+> manual §A1.
 
 Interaction feedback is tiered: ordinary controls get a contained press sheen,
-meaningful choices get a short-lived cloud of soap bubbles in the relevant
-brand colour, and nothing is ambient — the screen always returns to clean.
+and soap bubbles are reserved for two moments — reaching the final call to
+action, and completing a booking. Nothing is ambient; the screen always
+returns to clean within ~5 seconds.
 
 ## Getting started
 
@@ -50,9 +74,15 @@ scales with the weight of the action:
 
 | Tier | Where | Effect |
 | ---- | ----- | ------ |
-| Ordinary | Every `<Button>`, nav links, FAQ rows | Press sheen inside the control; no particles |
-| Selection | Service card activated | Short bubble cloud in that service's tint |
-| Milestone | Booking sent, newsletter joined | Larger bubble cloud with a splash |
+| Ordinary | Every `<Button>`, nav links, FAQ rows, service cards | Press sheen inside the control; no particles |
+| Milestone | Final CTA scrolled into view | Bubble cloud, **once per page view** |
+| Milestone | Booking sent, newsletter joined | Bubble cloud with a splash |
+
+Bubbles are **not** triggered by clicking. Expanding a service card is
+browsing, not an achievement — the tinted wash and expand animation carry it.
+The scroll trigger (`BubbleReveal`) fires **once per page view** on purpose: an
+effect that re-fires whenever the element re-enters the viewport becomes
+ambient noise the moment someone scrolls up and back down.
 
 **Tier 1 — the sheen.** A radial wipe expands from the exact point of contact,
 clipped by the button's own border radius (`eco-sheen` in `globals.css`, driven
@@ -61,17 +91,19 @@ it reads as the *surface reacting to a press* rather than as particles thrown
 over the top of the UI. Keyboard activation reports `(0,0)`, so those start
 from the centre instead.
 
-**Tiers 2–3 — bubbles.** Reserved for moments that earn them.
+**Tier 2 — bubbles.** Reserved for the two moments that earn them.
 
 ### Bubbles
 
-Three files under `src/components/bubbles/`:
+Four files under `src/components/bubbles/`:
 
 - **`engine.ts`** — framework-free canvas simulation. Owns the bubble pool,
   droplet and shock-ring particles, hit testing and pointer repulsion.
 - **`BubbleField.tsx`** — mounts the canvas and wires window events.
 - **`BubbleProvider.tsx`** — React context exposing `burst` and `burstFrom` to
   any client component via `useBubbles()`.
+- **`BubbleReveal.tsx`** — drop-in absolute overlay that fires one burst when
+  its parent scrolls into view, once per page view.
 
 ```tsx
 const { burst, burstFrom } = useBubbles();
@@ -129,8 +161,7 @@ either way. CSS keyframe animations are neutralised separately by the
 bursts entirely, and the press sheen is hidden via `motion-reduce:hidden`.
 
 `useReducedMotion()` is still fine for effect-only logic — autoplay timers,
-pointer listeners, the stat count-up — where it does not change what is
-rendered.
+pointer listeners — where it does not change what is rendered.
 
 Also covered: skip link, visible focus rings, labelled form fields with
 `aria-invalid` and `role="alert"`, focus moved to the first invalid field on
@@ -145,13 +176,33 @@ calls for an image. That means no image requests, no layout shift and no broken
 placeholders.
 
 To swap in real photos, replace `<Scene>` with `next/image` in the sections that
-use it (`Hero`, `About`, `Articles`, `ServicesPage`, `ContactPage`) and keep the
-existing aspect-ratio and `rounded-*` classes.
+use it (`Hero`, `About`, `Specialties`, `ServicesPage`, `ContactPage`) and keep
+the existing aspect-ratio and `rounded-*` classes.
 
 ## Content
 
-All copy, navigation, services, stats, testimonials, articles and FAQs live in
-`src/lib/site.ts`. Editing that one file updates every page.
+All copy, navigation, services, pricing, commitments, standards, specialties
+and FAQs live in `src/lib/site.ts`. Editing that one file updates every page.
+**Read the compliance header in that file before changing marketing copy.**
+
+Pricing is the §A2 price card in Canadian dollars, before 15% HST, cross-checked
+against the Unit Economics tab of the financial model. Flat rates only — never
+hourly for residential work — with a $150 minimum per visit.
+
+### Placeholders still to replace before launch
+
+- `site.phone` — currently a reserved fictional 506 number
+- `site.email` / `site.url` — placeholder domain
+- `site.socials` — placeholder profile URLs
+- Business hours are an assumption; the operations manual does not set them
+
+### Bilingual approach
+
+Dieppe is roughly two-thirds mainly French-speaking, so the site leads in
+French (`<html lang="fr-CA">`) with English alongside on headings, service
+names and process steps. This is **not** a full i18n setup — there is no locale
+router or translation catalogue, and body copy is French only. A proper
+`next-intl` FR/EN implementation is the natural next step.
 
 ## Wiring up a backend
 
@@ -170,11 +221,27 @@ network call is missing.
 src/
 ├── app/                  # routes: /, /services, /about, /contact, 404
 ├── components/
-│   ├── bubbles/          # canvas engine + React bindings
+│   ├── bubbles/          # canvas engine + React bindings + scroll trigger
 │   ├── forms/            # booking, newsletter
 │   ├── layout/           # header, footer, logo
 │   ├── motion/           # global reduced-motion policy
 │   ├── sections/         # page sections
-│   └── ui/               # button, reveal, count-up, icons, scene, dividers
+│   └── ui/               # button, reveal, icons, scene, dividers
 └── lib/                  # site content + helpers
 ```
+
+## Wide viewports
+
+The page container steps up past 1600px and the root font-size scales with it
+(17px → 18px → 20px). Because Tailwind sizing and spacing are rem-based, type,
+padding and gaps grow together, so a zoomed-out or ultrawide window scales as
+one piece instead of stranding a small layout in the middle of the screen.
+
+Note that lengths in media queries always resolve against the *initial* 16px
+root, so the breakpoints stay fixed as the scale steps up.
+
+## Page rhythm
+
+Only the footer uses the dark `bg-ink-gradient`. A dark band mid-page reads as
+the end of the site and stops people scrolling, so light sections alternate
+between white, `mesh-soft` and `lilac-50` instead.

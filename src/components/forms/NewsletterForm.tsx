@@ -44,7 +44,7 @@ export function NewsletterForm() {
             className="flex items-center gap-2.5 rounded-full bg-mint-400/15 px-4 py-3 text-sm font-semibold text-mint-200 ring-1 ring-mint-400/40"
           >
             <IconCheck className="size-4 shrink-0" />
-            You are on the list. Watch out for our first tip.
+            C’est fait. Surveillez notre premier conseil.
           </motion.p>
         ) : (
           <motion.form
@@ -64,7 +64,7 @@ export function NewsletterForm() {
               inputMode="email"
               autoComplete="email"
               value={email}
-              placeholder="Email address"
+              placeholder="Courriel"
               onChange={(e) => {
                 setEmail(e.target.value);
                 if (state === "error") setState("idle");
@@ -76,7 +76,7 @@ export function NewsletterForm() {
               type="submit"
               className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-mint-400 px-4 py-2 text-sm font-bold text-lilac-950 transition-transform duration-300 hover:scale-105 active:scale-95"
             >
-              Subscribe
+              S’abonner
               <IconArrowRight className="size-3.5" />
             </button>
           </motion.form>
@@ -85,7 +85,7 @@ export function NewsletterForm() {
 
       {state === "error" ? (
         <p className="mt-2 pl-4 text-xs font-medium text-orchid-300">
-          Please enter a valid email address.
+          Veuillez entrer un courriel valide.
         </p>
       ) : null}
     </div>

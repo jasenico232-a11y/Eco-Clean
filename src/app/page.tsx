@@ -3,8 +3,8 @@ import { TrustBar } from "@/components/sections/TrustBar";
 import { About } from "@/components/sections/About";
 import { Services } from "@/components/sections/Services";
 import { Process } from "@/components/sections/Process";
-import { Testimonials } from "@/components/sections/Testimonials";
-import { Articles } from "@/components/sections/Articles";
+import { Standards } from "@/components/sections/Standards";
+import { Specialties } from "@/components/sections/Specialties";
 import { Faq } from "@/components/sections/Faq";
 import { CtaBand } from "@/components/sections/CtaBand";
 
@@ -16,8 +16,8 @@ export default function HomePage() {
       <About />
       <Services />
       <Process />
-      <Testimonials />
-      <Articles />
+      <Standards />
+      <Specialties />
       <Faq />
       <CtaBand />
     </>

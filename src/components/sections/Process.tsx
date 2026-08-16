@@ -17,9 +17,9 @@ export function Process() {
       <div className="relative container-page">
         <SectionHeading
           align="center"
-          eyebrow="How it works"
-          title="Four steps from first call to fresh start"
-          description="No surveys, no sales visit, no three-week wait. Most clients go from enquiry to booked crew inside a single working day."
+          eyebrow="Comment ça marche"
+          title="Quatre étapes, du premier appel au résultat"
+          description="Pas de visite commerciale, pas d'attente de trois semaines. Réponse en moins de deux heures ouvrables et soumission écrite le jour même."
         />
 
         <RevealGroup
@@ -43,8 +43,14 @@ export function Process() {
                   />
                 </span>
                 <h3 className="font-display mt-6 text-lg font-bold text-ink">
-                  {step.title}
+                  {step.titleFr}
                 </h3>
+                <p
+                  lang="en"
+                  className="mt-1 text-[0.75rem] font-semibold text-lilac-600"
+                >
+                  {step.titleEn}
+                </p>
                 <p className="mt-2.5 text-sm leading-relaxed text-ink-muted">
                   {step.body}
                 </p>

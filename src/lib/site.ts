@@ -1,41 +1,83 @@
 /**
  * Single source of truth for site copy, navigation and service data.
- * Keeping it here means pages stay presentational and content edits are one-file.
+ *
+ * ─────────────────────────────────────────────────────────────────────────────
+ * ADVERTISING COMPLIANCE — READ BEFORE EDITING ANY COPY
+ *
+ * Canada's Competition Act (as amended by Bill C-59, in force June 2024) puts
+ * the burden of proof for environmental claims on the ADVERTISER. A private
+ * right of action before the Competition Tribunal followed in June 2025.
+ *
+ * Never publish on this site:
+ *   "organic cleaning", "chemical-free", unqualified "non-toxic",
+ *   unqualified "eco-friendly", "100% natural", "safe for children".
+ *
+ * Always phrase green claims as:
+ *   "cleaned with UL ECOLOGO and Green Seal certified products",
+ *   "low-VOC formulations", "third-party certified", "HEPA filtration",
+ *   "fragrance-free options available".
+ *
+ * Volume and experience claims ("X years", "X homes cleaned") must also be
+ * substantiated. This is a launching business — do not add them.
+ * ─────────────────────────────────────────────────────────────────────────────
+ *
+ * Source: Dieppe_Operations_Manual.docx §A1, §A2, §A5, Part D.
+ * Pricing cross-checked against Dieppe_Venture_Financial_Model.xlsx (Unit
+ * Economics tab). All figures in Canadian dollars, before 15% HST.
  */
 
 export const site = {
   name: "Eco-Clean",
-  tagline: "Spotless Spaces, Greener Living",
+  /** Always pair the brand with its substantiation — never "eco" on its own. */
+  qualifier: "Certifié ECOLOGO & Green Seal",
+  taglineFr: "Nettoyage certifié écologique à Dieppe",
+  taglineEn: "Certified green cleaning in Dieppe",
+
+  /** §A1 positioning sentence, French first as the manual requires. */
+  positioningFr:
+    "Nettoyage résidentiel et commercial certifié écologique, au service des familles, garderies et cliniques de Dieppe.",
+  positioningEn:
+    "Certified green residential and commercial cleaning for Dieppe families, daycares and clinics.",
+
   description:
-    "Eco-Clean delivers plant-based, non-toxic cleaning for homes and workplaces. Reliable crews, transparent pricing, and a spotless finish that is safe for kids, pets and the planet.",
-  url: "https://eco-clean.example.com",
-  phone: "(775) 329-3115",
-  phoneHref: "tel:+17753293115",
-  email: "hello@eco-clean.com",
-  emailHref: "mailto:hello@eco-clean.com",
-  address: "657 Twin Lakes Drive, Reno, NV 89523",
-  hours: "Mon–Sat · 7:00am – 7:00pm",
+    "Nettoyage résidentiel et commercial à Dieppe, Moncton et Riverview avec des produits certifiés UL ECOLOGO et Green Seal. Service bilingue, aspirateurs à filtration HEPA, options sans parfum. Certified green cleaning for Dieppe families, daycares and clinics.",
+
+  url: "https://eco-clean.ca",
+
+  // TODO: replace with the real business line before launch.
+  phone: "(506) 555-0142",
+  phoneHref: "tel:+15065550142",
+  // TODO: replace with the real mailbox before launch.
+  email: "bonjour@eco-clean.ca",
+  emailHref: "mailto:bonjour@eco-clean.ca",
+
+  /** No street address published — this is a mobile service business. */
+  region: "Dieppe, Nouveau-Brunswick",
+  serviceArea: "Dieppe · Moncton · Riverview",
+  hoursFr: "Lun–Sam · 7 h – 19 h",
+  hoursEn: "Mon–Sat · 7am – 7pm",
+
   socials: [
     { label: "Facebook", href: "https://facebook.com", icon: "facebook" },
     { label: "Instagram", href: "https://instagram.com", icon: "instagram" },
     { label: "LinkedIn", href: "https://linkedin.com", icon: "linkedin" },
-    { label: "YouTube", href: "https://youtube.com", icon: "youtube" },
   ],
 } as const;
 
 export const nav = [
-  { label: "Home", href: "/" },
-  { label: "Services", href: "/services" },
-  { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
+  { label: "Accueil", sub: "Home", href: "/" },
+  { label: "Services", sub: "Services", href: "/services" },
+  { label: "À propos", sub: "About", href: "/about" },
+  { label: "Contact", sub: "Contact", href: "/contact" },
 ] as const;
 
 export type Service = {
   slug: string;
-  title: string;
+  titleFr: string;
+  titleEn: string;
   short: string;
   description: string;
-  /** Drives the bubble burst tint when the card is activated. */
+  /** Drives the accent tint when the card is activated. */
   tint: [string, string];
   icon: ServiceIcon;
   price: string;
@@ -51,228 +93,282 @@ export type ServiceIcon =
   | "leaf"
   | "window";
 
+/**
+ * §A2 price card. Flat rates only — never hourly for residential work.
+ * Minimum charge $150 per visit. Prices reviewed every April.
+ */
 export const services: Service[] = [
   {
-    slug: "residential-cleaning",
-    title: "Residential Cleaning",
-    short: "Weekly, fortnightly or one-off cleans that keep home feeling new.",
+    slug: "menage-recurrent",
+    titleFr: "Ménage récurrent",
+    titleEn: "Recurring clean",
+    short:
+      "Aux deux semaines, chaque semaine ou une fois par mois — la même équipe, à chaque visite.",
     description:
-      "A consistent crew who learns your home. We work room by room with plant-based products, so every surface is safe for bare feet, curious toddlers and napping pets.",
+      "Notre service de base pour une maison de 3 chambres et 2 salles de bain. Séquence pièce par pièce, système de chiffons à code de couleur, aspirateur à filtration HEPA. Chaque nouveau client récurrent commence par un grand ménage.",
     tint: ["#a98bfb", "#ded0ff"],
     icon: "home",
-    price: "from $119",
-    duration: "2–4 hrs",
+    price: "220 $",
+    duration: "4 h · 3 ch / 2 sdb",
     includes: [
-      "All living areas, bedrooms and hallways",
-      "Kitchen degrease, appliance fronts, splashbacks",
-      "Bathroom sanitising and limescale treatment",
-      "Vacuum, mop and edge detailing",
+      "Toutes les pièces de vie, chambres et couloirs",
+      "Cuisine : dégraissage, façades d'électroménagers, dosserets",
+      "Salles de bain : chiffons rouges réservés aux toilettes",
+      "Aspirateur HEPA, vadrouille à plat, plinthes détaillées",
     ],
   },
   {
-    slug: "commercial-cleaning",
-    title: "Commercial Cleaning",
-    short: "After-hours office care that never interrupts a workday.",
+    slug: "grand-menage",
+    titleFr: "Grand ménage",
+    titleEn: "Deep clean",
+    short:
+      "La remise à zéro complète — et la première visite obligatoire de tout contrat récurrent.",
     description:
-      "Studios, clinics and offices up to 40,000 sq ft. Fully insured, police-checked crews, digital sign-off sheets and a named account lead you can actually reach.",
-    tint: ["#7a52e0", "#c6aeff"],
-    icon: "office",
-    price: "custom quote",
-    duration: "nightly",
-    includes: [
-      "Desks, meeting rooms and breakout zones",
-      "Washroom restocking and sanitising",
-      "Touchpoint disinfection programme",
-      "Monthly reporting and audit trail",
-    ],
-  },
-  {
-    slug: "deep-cleaning",
-    title: "Deep Cleaning",
-    short: "The full reset — skirting boards, grout, ovens and everything behind.",
-    description:
-      "Our most thorough service. We move what can be moved, steam what should be steamed, and finish with a written checklist of all 148 points covered.",
+      "Notre service le plus complet. On déplace ce qui peut l'être, on traite la saleté incrustée et on termine par la vérification en 10 points du propriétaire avant de quitter les lieux.",
     tint: ["#22cda9", "#b6f7e7"],
     icon: "deep",
-    price: "from $289",
-    duration: "5–8 hrs",
+    price: "420 $",
+    duration: "6,5 h",
     includes: [
-      "Oven, extractor and fridge interiors",
-      "Grout, tile and limescale restoration",
-      "Skirting, door frames and light fittings",
-      "Interior windows, tracks and sills",
+      "Intérieur du four, de la hotte et du réfrigérateur",
+      "Coulis, céramique et traitement du calcaire",
+      "Plinthes, cadres de porte et luminaires",
+      "Fenêtres intérieures, rails et appuis",
     ],
   },
   {
-    slug: "move-in-move-out",
-    title: "Move-In / Move-Out",
-    short: "Deposit-back cleans, timed to your handover, not ours.",
+    slug: "demenagement",
+    titleFr: "Déménagement",
+    titleEn: "Move-in / move-out",
+    short:
+      "Pour les courtiers, gestionnaires d'immeubles et propriétaires, à l'heure de la remise des clés.",
     description:
-      "Landlord-grade checklists built from real inventory reports. We photograph the finish so your agent has nothing to argue with — and we will return free within 72 hours if they do.",
+      "Listes de vérification calquées sur les états des lieux réels. On photographie le résultat pour que votre agent n'ait rien à contester, et on revient gratuitement sous 48 heures si nécessaire.",
     tint: ["#ee8dd6", "#ffd6f2"],
     icon: "move",
-    price: "from $249",
-    duration: "4–7 hrs",
+    price: "475 $",
+    duration: "7 h",
     includes: [
-      "Inside every cupboard, drawer and wardrobe",
-      "Appliance deep clean and descale",
-      "Carpet lift and hard-floor restoration",
-      "Photographic completion report",
+      "Intérieur de toutes les armoires, tiroirs et garde-robes",
+      "Électroménagers en profondeur et détartrage",
+      "Restauration des planchers durs",
+      "Rapport photographique de fin de travaux",
     ],
   },
   {
-    slug: "eco-sanitising",
-    title: "Eco Sanitising",
-    short: "Hospital-grade results from plant-derived, zero-residue formulas.",
+    slug: "location-court-terme",
+    titleFr: "Location court terme",
+    titleEn: "Short-term rental turnover",
+    short:
+      "Rotation Airbnb près de l'aéroport et de Place Champlain, avec délai garanti.",
     description:
-      "Electrostatic misting with biodegradable disinfectant that kills 99.99% of common bacteria and leaves no synthetic residue behind. Safe to re-enter in 20 minutes.",
-    tint: ["#12a98b", "#7ff0d6"],
-    icon: "leaf",
-    price: "from $169",
-    duration: "1–2 hrs",
-    includes: [
-      "Electrostatic full-room misting",
-      "High-touch point programme",
-      "Allergen and dust-mite reduction",
-      "Certificate of sanitisation",
-    ],
-  },
-  {
-    slug: "window-glass",
-    title: "Window & Glass Care",
-    short: "Streak-free glass inside and out, up to four storeys.",
-    description:
-      "Purified-water pole systems mean no ladders, no detergent runoff and no smears — just glass that disappears. Frames, tracks and sills included as standard.",
+      "Pour les hôtes de 1 à 2 chambres qui ont besoin d'une rotation fiable entre deux séjours. Réapprovisionnement du linge, remise en scène et vérification photo avant chaque arrivée.",
     tint: ["#6540bc", "#93e6e4"],
     icon: "window",
-    price: "from $99",
-    duration: "1–3 hrs",
+    price: "130 $",
+    duration: "2,5 h · 1–2 ch",
     includes: [
-      "Interior and exterior glass",
-      "Frames, tracks and sills",
-      "Skylights and conservatory panels",
-      "Purified-water, detergent-free system",
+      "Rotation complète entre deux séjours",
+      "Changement de literie et de serviettes",
+      "Réapprovisionnement des consommables",
+      "Vérification photo avant l'arrivée",
+    ],
+  },
+  {
+    slug: "apres-construction",
+    titleFr: "Après-construction",
+    titleEn: "Post-construction",
+    short:
+      "Pour les constructeurs des nouveaux quartiers de Dieppe. Devis après visite du chantier.",
+    description:
+      "Retrait de la poussière de construction, des résidus d'adhésif et des étiquettes. Toujours estimé au pied carré après une visite sur place — jamais par téléphone.",
+    tint: ["#7a52e0", "#c6aeff"],
+    icon: "leaf",
+    price: "dès 550 $",
+    duration: "≈10 h",
+    includes: [
+      "Poussière de construction, du plafond au plancher",
+      "Retrait des étiquettes, adhésifs et résidus",
+      "Conduits, luminaires et quincaillerie",
+      "Devis de 0,15 $ à 0,50 $ / pi² après visite",
+    ],
+  },
+  {
+    slug: "entretien-commercial",
+    titleFr: "Entretien commercial",
+    titleEn: "Commercial janitorial",
+    short:
+      "Garderies, cliniques et petits bureaux — notre spécialité, en dehors des heures d'ouverture.",
+    description:
+      "Notre marché de prédilection. Fiche de certification de chaque produit disponible sur demande pour vos visites d'inspection, gamme sans parfum pour les cliniques, et un responsable de compte que vous pouvez joindre.",
+    tint: ["#12a98b", "#7ff0d6"],
+    icon: "office",
+    price: "42 $ / h-personne",
+    duration: "selon contrat",
+    includes: [
+      "Garderies, cliniques médicales et dentaires",
+      "Programme de désinfection des points de contact",
+      "Gamme sans parfum disponible",
+      "0,12 $ à 0,25 $ / pi² selon le contrat",
     ],
   },
 ];
 
-export const stats = [
-  { value: 12, suffix: "+", label: "Years of experience" },
-  { value: 10400, suffix: "+", label: "Spaces cleaned" },
-  { value: 99, suffix: "%", label: "Customer satisfaction" },
-  { value: 640, suffix: "+", label: "Happy households" },
+/** §A2 add-ons. Quoted on top of any service above. */
+export const addOns = [
+  { label: "Fenêtres intérieures", labelEn: "Interior windows", price: "90 $" },
+  { label: "Four ou réfrigérateur", labelEn: "Oven or fridge", price: "55 $ ch." },
+  {
+    label: "Extraction de tapis",
+    labelEn: "Carpet extraction",
+    price: "0,20–0,30 $ / pi²",
+  },
 ];
 
+/**
+ * Substantiated commitments, not volume claims. This is a launching business:
+ * every number here is a policy we control, not a history we cannot prove.
+ */
+export const commitments = [
+  {
+    value: "100",
+    suffix: "%",
+    label: "Produits certifiés ECOLOGO ou Green Seal",
+    labelEn: "Certified products, every job",
+  },
+  {
+    value: "2",
+    suffix: " h",
+    label: "Délai de réponse à toute demande",
+    labelEn: "Response to any enquiry",
+  },
+  {
+    value: "48",
+    suffix: " h",
+    label: "Reprise gratuite si rien ne va",
+    labelEn: "Free redo window",
+  },
+  {
+    value: "2",
+    suffix: " M$",
+    label: "Assurance responsabilité civile",
+    labelEn: "General liability cover",
+  },
+];
+
+/** Condensed from the eight-stage job cycle in §A3. */
 export const processSteps = [
   {
     step: "01",
-    title: "Tell us about the space",
-    body: "Ninety seconds online, or one call. Size, rooms, pets, any problem areas — that is all we need to price it properly.",
+    titleFr: "Votre demande",
+    titleEn: "Enquiry",
+    body: "On répond en moins de deux heures ouvrables, en français ou en anglais. On note les chambres, les animaux, les sensibilités et votre langue préférée.",
   },
   {
     step: "02",
-    title: "Get a fixed quote",
-    body: "A flat price within two hours, itemised by room. No hourly creep, no surprise line items on the invoice.",
+    titleFr: "Un prix fixe",
+    titleEn: "Flat quote",
+    body: "Un tarif forfaitaire écrit le jour même, valable 14 jours, avec ce qui est inclus et ce qui ne l'est pas. Jamais à l'heure pour le résidentiel.",
   },
   {
     step: "03",
-    title: "Meet your crew",
-    body: "The same vetted team every visit. You will know their names, and they will know how you like the kitchen left.",
+    titleFr: "Le grand ménage",
+    titleEn: "First deep clean",
+    body: "Tout contrat récurrent commence par un grand ménage. C'est la seule façon honnête de partir sur une base propre — sans exception.",
   },
   {
     step: "04",
-    title: "Enjoy the sparkle",
-    body: "Photo sign-off after each clean. If anything is not right, tell us within 48 hours and we come back free.",
+    titleFr: "La vérification",
+    titleEn: "Quality check",
+    body: "Vérification en 10 points avant de partir, puis un suivi sous 24 heures après chaque première visite. Reprise gratuite sous 48 heures.",
   },
 ];
 
-export const testimonials = [
+/**
+ * Operational standards from §A4 and §A5. These replace testimonials: a
+ * business that has not yet served clients cannot publish client quotes.
+ */
+export const standards = [
   {
-    quote:
-      "Our clinic switched to Eco-Clean because of the non-toxic products and stayed because of the consistency. Three years, not one missed night.",
-    name: "Dr. Amara Bello",
-    role: "Practice Manager, Northside Dental",
-    initials: "AB",
+    icon: "recycle" as const,
+    titleFr: "Chiffons à code de couleur",
+    titleEn: "Colour-coded cloths",
+    body: "Le rouge ne quitte jamais la toilette. Le jaune n'entre jamais dans la cuisine. Le vert n'entre jamais dans une salle de bain. Le bleu sert au dépoussiérage à sec uniquement.",
   },
   {
-    quote:
-      "They deep-cleaned a flat I was convinced needed replacing. The oven alone was worth the money. Deposit back in full.",
-    name: "James Whitfield",
-    role: "Tenant, Riverside Quarter",
-    initials: "JW",
+    icon: "shield" as const,
+    titleFr: "Filtration HEPA",
+    titleEn: "HEPA filtration",
+    body: "Aspirateurs commerciaux à filtration HEPA sur chaque camion, avec un jeu de filtres de rechange en permanence. Important dans les foyers avec des sensibilités respiratoires.",
   },
   {
-    quote:
-      "Two toddlers and a rescue greyhound. Knowing there is nothing harsh on the floors they all roll around on is the entire reason we booked.",
-    name: "Priya Raman",
-    role: "Homeowner, Somerset Way",
-    initials: "PR",
+    icon: "leaf" as const,
+    titleFr: "Gamme sans parfum",
+    titleEn: "Fragrance-free line",
+    body: "Une gamme complète sans parfum pour les cliniques et les clients sensibles. Personne d'autre à Dieppe ne l'offre explicitement.",
   },
   {
-    quote:
-      "The reporting is what sold our facilities board. Audit trail, monthly summary, one named contact. It is genuinely professional.",
-    name: "Tom Okafor",
-    role: "Facilities Lead, Marlow Studios",
-    initials: "TO",
+    icon: "check" as const,
+    titleFr: "Cartable de conformité",
+    titleEn: "Compliance binder",
+    body: "Le certificat et la fiche signalétique de chaque produit, sur papier et dans le nuage. Disponible pour toute visite d'inspection de garderie ou de clinique.",
   },
 ];
 
-export const articles = [
+/** The three segments §A1 tells us to specialise in. */
+export const specialties = [
   {
-    date: "Sep 17",
-    year: "2026",
-    category: "Cleaning Secrets",
-    title: "Unlock expert cleaning secrets to transform your spaces",
-    excerpt:
-      "The five-minute habits that keep a home ninety percent clean, so the deep clean never feels like a rescue mission.",
-    author: "David Elson",
-    readTime: "6 min",
+    icon: "users" as const,
+    titleFr: "Garderies",
+    titleEn: "Daycares",
+    body: "Fiche de certification remise à chaque visite d'inspection. Produits certifiés ECOLOGO ou Green Seal, sans exception, y compris pour les travaux difficiles.",
+    tone: "lilac" as const,
   },
   {
-    date: "Sep 24",
-    year: "2026",
-    category: "Eco Living",
-    title: "Plant-based products that actually outperform bleach",
-    excerpt:
-      "We ran citric, lactic and caprylic formulas against a chlorine control on real kitchen grime. The results surprised us too.",
-    author: "James Hall",
-    readTime: "8 min",
+    icon: "shield" as const,
+    titleFr: "Cliniques",
+    titleEn: "Medical & dental clinics",
+    body: "Gamme sans parfum, programme de désinfection des points de contact, et fiches signalétiques accessibles sur place comme l'exige le SIMDUT.",
+    tone: "mint" as const,
   },
   {
-    date: "Sep 29",
-    year: "2026",
-    category: "Office Care",
-    title: "The ultimate cleaning resource for homes and offices",
-    excerpt:
-      "A room-by-room frequency chart you can pin to the fridge — or hand to your facilities team on day one.",
-    author: "Denise Cole",
-    readTime: "5 min",
+    icon: "home" as const,
+    titleFr: "Familles",
+    titleEn: "Families",
+    body: "Foyers avec de jeunes enfants ou des sensibilités respiratoires. Formulations à faible COV et filtration HEPA à chaque visite.",
+    tone: "orchid" as const,
   },
 ];
 
 export const faqs = [
   {
-    q: "Are your products genuinely safe for pets and children?",
-    a: "Yes. Every formula we carry is plant-derived, biodegradable and free of ammonia, chlorine bleach and phthalates. Surfaces are safe to touch as soon as they are dry, and we are happy to send you the full ingredient list for anything we use in your home.",
+    q: "Vos produits sont-ils vraiment certifiés ?",
+    qEn: "Are your products genuinely certified?",
+    a: "Oui, et nous pouvons le prouver. Chaque produit porte la certification UL ECOLOGO, Green Seal ou une certification tierce reconnue équivalente. Le certificat et la fiche signalétique de chaque produit se trouvent dans notre cartable de conformité, sur papier et dans le nuage. Demandez-le : nous le remettons volontiers avant toute visite.",
   },
   {
-    q: "Do I need to be home during the clean?",
-    a: "Not at all. Around two-thirds of our clients give us a key or door code, held under a logged key-management policy. You will get a start notification and a photo sign-off when we finish.",
+    q: "Servez-vous la clientèle en français ?",
+    qEn: "Do you serve clients in French?",
+    a: "Le français d'abord. Nos devis, nos factures, notre boîte vocale et notre site mènent en français, avec l'anglais à côté. Vous choisissez votre langue à la première prise de contact et nous nous y tenons pour toute la durée du contrat.",
   },
   {
-    q: "What happens if I am not happy with something?",
-    a: "Tell us within 48 hours and we return free of charge to put it right. That guarantee is on every clean, including one-off bookings, and it has never had a time limit hidden in the small print.",
+    q: "Pourquoi facturez-vous un prix fixe plutôt qu'à l'heure ?",
+    qEn: "Why flat rates instead of hourly?",
+    a: "Parce que le tarif horaire vous invite à surveiller l'horloge. Un prix fixe nous récompense d'être efficaces et vous garantit le montant avant que quiconque entre chez vous. Si la tâche prend plus de temps que prévu, c'est notre problème, pas le vôtre. Facturation minimale de 150 $ par visite.",
   },
   {
-    q: "How does pricing work — is it hourly?",
-    a: "No. We quote a fixed price per visit based on the size and condition of the space. If your crew finishes early, the price does not change; if the job takes longer than we estimated, that is on us.",
+    q: "Pourquoi dois-je commencer par un grand ménage ?",
+    qEn: "Why must I start with a deep clean?",
+    a: "Tout nouveau contrat récurrent commence par un grand ménage payant, sans exception. Reprendre l'accumulation laissée par quelqu'un d'autre au tarif d'entretien courant mène à un mauvais résultat pour vous et à une perte pour nous. Une seule visite remet le compteur à zéro.",
   },
   {
-    q: "Can I change or cancel a booking?",
-    a: "Reschedule or cancel free up to 24 hours before your slot, straight from the confirmation email. Inside 24 hours we apply a 50% charge, because the crew is already rostered.",
+    q: "Que se passe-t-il si le résultat ne me convient pas ?",
+    qEn: "What if I am not happy with the result?",
+    a: "Dites-le-nous dans les 48 heures et nous revenons gratuitement. Aucun formulaire, aucune négociation. Pendant notre première année, le propriétaire se déplace lui-même pour chaque reprise.",
   },
   {
-    q: "Are your cleaners insured and background checked?",
-    a: "Every crew member is employed directly, DBS/background checked, and covered by $2m public liability plus accidental damage cover. We never subcontract.",
+    q: "Êtes-vous assurés ?",
+    qEn: "Are you insured?",
+    a: "Assurance responsabilité civile générale de 2 M$, cautionnement d'entretien ménager attendu par la clientèle commerciale, et assurance automobile commerciale. Nous sommes inscrits auprès de Travail sécuritaire NB et notre personnel reçoit la formation SIMDUT à l'embauche, avec mise à jour annuelle.",
   },
 ];

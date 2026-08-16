@@ -35,11 +35,11 @@ export function Footer() {
             <div>
               <Logo tone="dark" id="ftr" />
               <p className="mt-5 max-w-sm text-sm leading-relaxed text-lilac-100/70">
-                {site.description}
+                {site.positioningFr}
               </p>
               <p className="mt-5 inline-flex items-center gap-2 rounded-full bg-mint-400/12 px-3.5 py-2 text-xs font-semibold text-mint-200 ring-1 ring-mint-400/25">
                 <IconRecycle className="size-4" />
-                100% plant-based · Carbon-neutral routing
+                Produits certifiés UL ECOLOGO & Green Seal
               </p>
 
               <div className="mt-6 flex items-center gap-2.5">
@@ -61,9 +61,9 @@ export function Footer() {
               </div>
             </div>
 
-            <nav aria-label="Quick links">
+            <nav aria-label="Liens rapides">
               <h3 className="font-display text-base font-bold text-white">
-                Quick links
+                Liens rapides
               </h3>
               <ul className="mt-5 flex flex-col gap-3 text-sm">
                 {nav.map((item) => (
@@ -81,7 +81,7 @@ export function Footer() {
                     href="/contact#booking"
                     className="text-lilac-100/70 transition-colors hover:text-mint-300"
                   >
-                    Get a quote
+                    Demander une soumission
                   </Link>
                 </li>
               </ul>
@@ -98,7 +98,7 @@ export function Footer() {
                       href={`/services#${s.slug}`}
                       className="text-lilac-100/70 transition-colors hover:text-mint-300"
                     >
-                      {s.title}
+                      {s.titleFr}
                     </Link>
                   </li>
                 ))}
@@ -107,7 +107,7 @@ export function Footer() {
 
             <div>
               <h3 className="font-display text-base font-bold text-white">
-                Get in touch
+                Nous joindre
               </h3>
               <ul className="mt-5 flex flex-col gap-4 text-sm">
                 <li>
@@ -130,11 +130,11 @@ export function Footer() {
                 </li>
                 <li className="flex items-start gap-3 text-lilac-100/70">
                   <IconPin className="mt-0.5 size-4 shrink-0 text-mint-300" />
-                  {site.address}
+                  {site.serviceArea}
                 </li>
                 <li className="flex items-start gap-3 text-lilac-100/70">
                   <IconClock className="mt-0.5 size-4 shrink-0 text-mint-300" />
-                  {site.hours}
+                  {site.hoursFr}
                 </li>
               </ul>
 
@@ -142,7 +142,7 @@ export function Footer() {
                 Newsletter
               </h3>
               <p className="mt-2 mb-3 text-sm text-lilac-100/60">
-                One genuinely useful cleaning tip a month. Nothing else.
+                Un conseil d’entretien utile par mois. Rien d’autre.
               </p>
               <NewsletterForm />
             </div>
@@ -150,14 +150,14 @@ export function Footer() {
 
           <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-7 text-xs text-lilac-100/55 sm:flex-row">
             <p>
-              © {year} {site.name}. All rights reserved.
+              © {year} {site.name}. Tous droits réservés.
             </p>
             <div className="flex items-center gap-6">
               <Link href="/contact" className="transition-colors hover:text-mint-300">
-                Privacy policy
+                Confidentialité
               </Link>
               <Link href="/contact" className="transition-colors hover:text-mint-300">
-                Terms
+                Conditions
               </Link>
             </div>
           </div>

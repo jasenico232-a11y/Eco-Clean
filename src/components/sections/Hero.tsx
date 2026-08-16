@@ -19,15 +19,7 @@ import {
   IconRecycle,
   IconShield,
   IconSparkle,
-  IconStar,
 } from "@/components/ui/Icons";
-
-const avatars = [
-  { initials: "AB", tone: "from-lilac-400 to-lilac-600" },
-  { initials: "JW", tone: "from-mint-400 to-mint-600" },
-  { initials: "PR", tone: "from-orchid-300 to-orchid-400" },
-  { initials: "TO", tone: "from-lilac-600 to-lilac-800" },
-];
 
 export function Hero() {
   const ref = useRef<HTMLElement>(null);
@@ -106,7 +98,7 @@ export function Hero() {
               className="inline-flex items-center gap-2 rounded-full bg-white/14 px-4 py-2 text-xs font-semibold tracking-[0.14em] text-white uppercase ring-1 ring-white/25 backdrop-blur-sm"
             >
               <IconSparkle className="size-3.5 text-mint-300" />
-              Spotless spaces, greener living
+              Certifié ECOLOGO &amp; Green Seal
             </motion.span>
 
             <motion.h1
@@ -119,10 +111,10 @@ export function Hero() {
               }}
               className="mt-6 text-[2.6rem] leading-[1.05] font-extrabold text-white sm:text-6xl lg:text-[4.1rem]"
             >
-              Trusted eco cleaning
-              <br className="hidden sm:block" /> for{" "}
+              Nettoyage certifié
+              <br className="hidden sm:block" /> écologique à{" "}
               <span className="relative inline-block">
-                <span className="relative z-10">homes</span>
+                <span className="relative z-10">Dieppe</span>
                 <svg
                   aria-hidden="true"
                   viewBox="0 0 200 16"
@@ -137,9 +129,23 @@ export function Hero() {
                     fill="none"
                   />
                 </svg>
-              </span>{" "}
-              & businesses
+              </span>
             </motion.h1>
+
+            {/* English alongside, as §A1 requires — French leads, English follows. */}
+            <motion.p
+              lang="en"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                duration: 0.7,
+                delay: 0.14,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              className="mt-4 text-lg font-semibold text-mint-200 sm:text-xl"
+            >
+              Certified green cleaning for Dieppe families, daycares and clinics
+            </motion.p>
 
             <motion.p
               initial={{ opacity: 0, y: 22 }}
@@ -151,10 +157,10 @@ export function Hero() {
               }}
               className="mt-6 max-w-xl text-[1.05rem] leading-relaxed text-lilac-50/85 sm:text-lg"
             >
-              Enjoy a spotless space without lifting a finger. Our vetted crews
-              clean with plant-based products that are kind to your family, your
-              pets and the planet — and we back every visit with a 48-hour
-              guarantee.
+              Tous nos produits portent la certification UL ECOLOGO ou Green
+              Seal — certificats et fiches signalétiques sur demande. Filtration
+              HEPA, formulations à faible COV, gamme sans parfum offerte. Prix
+              fixe écrit le jour même, reprise gratuite sous 48 heures.
             </motion.p>
 
             <motion.div
@@ -173,14 +179,16 @@ export function Hero() {
                 variant="mint"
                 icon={<IconArrowRight className="size-3.5" />}
               >
-                Book your cleaning today
+                Demander une soumission
               </Button>
               <Button href="/services" size="lg" variant="ghost">
-                Explore our services
+                Voir nos services
               </Button>
             </motion.div>
 
-            {/* Social proof */}
+            {/* Proof points, not social proof. A pre-launch business has no
+                clients to quote and no rating to display, so everything here
+                is a verifiable fact about how we operate. */}
             <motion.div
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
@@ -189,50 +197,20 @@ export function Hero() {
                 delay: 0.38,
                 ease: [0.22, 1, 0.36, 1],
               }}
-              className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-4"
+              className="mt-10 flex flex-wrap items-center gap-x-5 gap-y-3 text-xs font-semibold text-lilac-50/85"
             >
-              <div className="flex items-center gap-3">
-                <div className="flex -space-x-2.5">
-                  {avatars.map((a) => (
-                    <span
-                      key={a.initials}
-                      className={`grid size-9 place-items-center rounded-full bg-gradient-to-br ${a.tone} text-[0.66rem] font-bold text-white ring-2 ring-white/70`}
-                    >
-                      {a.initials}
-                    </span>
-                  ))}
-                </div>
-                <div className="leading-tight">
-                  <div className="flex items-center gap-1 text-mint-300">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <IconStar key={i} className="size-3.5" />
-                    ))}
-                    <span className="ml-1 text-sm font-bold text-white">
-                      5.0
-                    </span>
-                  </div>
-                  <p className="text-xs text-lilac-100/75">
-                    640+ verified reviews
-                  </p>
-                </div>
-              </div>
-
-              <div className="hidden h-9 w-px bg-white/20 sm:block" />
-
-              <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-semibold text-lilac-50/85">
-                <span className="inline-flex items-center gap-1.5">
-                  <IconLeaf className="size-4 text-mint-300" />
-                  Plant-based only
-                </span>
-                <span className="inline-flex items-center gap-1.5">
-                  <IconShield className="size-4 text-mint-300" />
-                  Insured & vetted
-                </span>
-                <span className="inline-flex items-center gap-1.5">
-                  <IconRecycle className="size-4 text-mint-300" />
-                  Zero-plastic refills
-                </span>
-              </div>
+              <span className="inline-flex items-center gap-1.5">
+                <IconLeaf className="size-4 text-mint-300" />
+                Produits certifiés ECOLOGO &amp; Green Seal
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <IconShield className="size-4 text-mint-300" />
+                Assurance responsabilité 2 M$
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <IconRecycle className="size-4 text-mint-300" />
+                Filtration HEPA · faible COV
+              </span>
             </motion.div>
           </div>
 
@@ -246,7 +224,7 @@ export function Hero() {
             <Scene
               tone="deep"
               seed={3}
-              label="Illustration of an Eco-Clean crew member with cleaning supplies"
+              label="Illustration d'une équipe Eco-Clean au travail"
               icon={<IconBubble />}
               className="aspect-[4/3.4] w-full shadow-[var(--shadow-lift)] ring-1 ring-white/25 sm:aspect-[4/3]"
             />
@@ -261,10 +239,10 @@ export function Hero() {
               </span>
               <span className="leading-tight">
                 <span className="block text-sm font-bold text-ink">
-                  Eco-certified
+                  Certifié
                 </span>
                 <span className="block text-[0.7rem] text-ink-muted">
-                  Green Seal approved
+                  ECOLOGO & Green Seal
                 </span>
               </span>
             </motion.div>
@@ -274,10 +252,10 @@ export function Hero() {
               className="absolute -top-4 -right-1 rounded-2xl bg-white/95 px-4 py-3 text-center shadow-[var(--shadow-lift)] backdrop-blur sm:-right-5"
             >
               <span className="text-gradient block text-xl font-extrabold">
-                99%
+                48 h
               </span>
               <span className="block text-[0.68rem] font-semibold text-ink-muted">
-                Satisfaction
+                Reprise gratuite
               </span>
             </motion.div>
           </motion.div>
@@ -292,7 +270,7 @@ export function Hero() {
           className="mt-14 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-medium text-lilac-50/80 ring-1 ring-white/20 backdrop-blur-sm"
         >
           <IconPin className="size-4 text-mint-300" />
-          Serving Reno &amp; Northern Nevada · Same-week slots usually available
+          Dieppe · Moncton · Riverview — service en français, en anglais au besoin
         </motion.p>
       </div>
 

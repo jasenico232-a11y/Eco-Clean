@@ -7,13 +7,17 @@ import {
   IconUsers,
 } from "@/components/ui/Icons";
 
+/**
+ * Every badge is a fact we can evidence on request. No ratings, no volume
+ * claims — see the compliance note at the top of `src/lib/site.ts`.
+ */
 const badges = [
-  { icon: IconLeaf, label: "100% plant-based products" },
-  { icon: IconShield, label: "$2m insured & background checked" },
-  { icon: IconRecycle, label: "Refillable, zero-plastic system" },
-  { icon: IconStar, label: "5.0 average from 640+ reviews" },
-  { icon: IconUsers, label: "Directly employed crews" },
-  { icon: IconSparkle, label: "48-hour put-it-right guarantee" },
+  { icon: IconLeaf, label: "Produits certifiés UL ECOLOGO & Green Seal" },
+  { icon: IconShield, label: "Assurance responsabilité civile 2 M$" },
+  { icon: IconRecycle, label: "Aspirateurs à filtration HEPA" },
+  { icon: IconSparkle, label: "Gamme sans parfum offerte" },
+  { icon: IconUsers, label: "Service en français, en anglais au besoin" },
+  { icon: IconStar, label: "Prix fixe — jamais à l'heure" },
 ];
 
 /**

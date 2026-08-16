@@ -15,33 +15,33 @@ import {
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Contact & booking",
+  title: "Contact et soumission",
   description:
-    "Book an eco-friendly clean or ask us anything. Fixed quotes within two working hours, seven days a week.",
+    "Demandez une soumission ou posez-nous une question. Prix fixe écrit en moins de deux heures ouvrables, en français ou en anglais.",
 };
 
 const details = [
   {
     icon: IconPin,
-    label: "Our location",
-    lines: [site.address],
+    label: "Zone desservie",
+    lines: [site.serviceArea, site.region],
   },
   {
     icon: IconPhone,
-    label: "Phone number",
-    lines: [site.phone, "Mon–Sat, 7am–7pm"],
+    label: "Téléphone",
+    lines: [site.phone, site.hoursFr],
     href: site.phoneHref,
   },
   {
     icon: IconMail,
-    label: "Email address",
-    lines: [site.email, "Replies within 2 hours"],
+    label: "Courriel",
+    lines: [site.email, "Réponse en moins de 2 h ouvrables"],
     href: site.emailHref,
   },
   {
     icon: IconClock,
-    label: "Opening hours",
-    lines: [site.hours, "Sunday: emergencies only"],
+    label: "Heures",
+    lines: [site.hoursFr, "Dimanche : urgences seulement"],
   },
 ];
 
@@ -49,10 +49,10 @@ export default function ContactPage() {
   return (
     <>
       <PageHero
-        eyebrow="Get in touch"
+        eyebrow="Nous joindre"
         breadcrumb="Contact"
-        title="Let's get your space sparkling"
-        description="Whether it is your home or your office, we make booking easy and make sure every cleaning need is met with professionalism and care."
+        title="Parlons de votre espace"
+        description="Résidence, garderie, clinique ou bureau — décrivez-nous l'espace et recevez un prix fixe écrit le jour même."
       />
 
       <section className="mesh-soft py-16 lg:py-24">
@@ -112,7 +112,7 @@ export default function ContactPage() {
               <Reveal direction="right" delay={0.12}>
                 <div className="rounded-2xl bg-white p-5 shadow-[var(--shadow-soft)] ring-1 ring-lilac-100">
                   <span className="block text-[0.72rem] font-bold tracking-wider text-ink-muted uppercase">
-                    Stay connected
+                    Suivez-nous
                   </span>
                   <div className="mt-3.5 flex items-center gap-2.5">
                     {site.socials.map((s) => {
@@ -139,15 +139,15 @@ export default function ContactPage() {
                   tone="mint"
                   seed={41}
                   icon={<IconLeaf />}
-                  label="Illustration of the Eco-Clean service area"
+                  label="Illustration de la zone desservie par Eco-Clean"
                   className="aspect-[4/3] shadow-[var(--shadow-soft)]"
                 >
                   <div className="absolute inset-x-4 bottom-4 rounded-2xl bg-white/92 px-4 py-3 backdrop-blur">
                     <p className="text-sm font-bold text-ink">
-                      Serving Reno &amp; Northern Nevada
+                      Dieppe, Moncton et Riverview
                     </p>
                     <p className="mt-0.5 text-xs text-ink-muted">
-                      Within 30 miles of the city centre — ask about further out.
+                      Ailleurs dans le Grand Moncton ? Demandez-nous.
                     </p>
                   </div>
                 </Scene>

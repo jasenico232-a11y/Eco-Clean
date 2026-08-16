@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import { IconArrowRight, IconPhone, IconSparkle } from "@/components/ui/Icons";
 import { site } from "@/lib/site";
+import { BubbleReveal } from "@/components/bubbles/BubbleReveal";
 
 export function CtaBand() {
   return (
@@ -23,6 +24,13 @@ export function CtaBand() {
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 bg-[radial-gradient(40rem_24rem_at_10%_0%,rgba(255,255,255,0.3),transparent_60%)]"
           />
+
+          {/* The one ambient bubble moment on the page: it rises as the final
+              call to action scrolls into view, once per visit, then clears. */}
+          <BubbleReveal
+            colors={["#ffffff", "#7ff0d6", "#c6aeff", "#f9b4e6"]}
+            count={18}
+          />
           <span
             aria-hidden="true"
             className="animate-float pointer-events-none absolute -top-10 right-16 size-32 rounded-full bg-white/12 ring-1 ring-white/25"
@@ -36,14 +44,13 @@ export function CtaBand() {
             <div className="max-w-2xl">
               <span className="inline-flex items-center gap-2 rounded-full bg-white/16 px-3.5 py-1.5 text-xs font-semibold tracking-[0.14em] text-white uppercase ring-1 ring-white/25">
                 <IconSparkle className="size-3.5 text-mint-300" />
-                Ready when you are
+                Prêts quand vous l’êtes
               </span>
               <h2 className="mt-5 text-3xl leading-tight font-extrabold text-white sm:text-4xl lg:text-[2.9rem]">
-                Join thousands of happy clients and book today
+                Demandez votre soumission dès aujourd’hui
               </h2>
               <p className="mt-4 text-[1.02rem] leading-relaxed text-lilac-50/85">
-                Booking takes ninety seconds. Pick your date, tell us about the
-                space, and your fixed quote lands within two hours.
+                Dites-nous en quoi consiste l’espace et recevez un prix fixe écrit le jour même. Réponse en moins de deux heures ouvrables, en français ou en anglais.
               </p>
             </div>
 
@@ -54,7 +61,7 @@ export function CtaBand() {
                 variant="mint"
                 icon={<IconArrowRight className="size-3.5" />}
               >
-                Book a cleaning now
+                Demander une soumission
               </Button>
               <Button
                 href={site.phoneHref}
