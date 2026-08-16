@@ -1,0 +1,333 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   Eco-Clean design system
+   Palette: "Eco Bloom" — a deep-to-light lilac ramp blended into aqua-mint,
+   with an orchid flourish. Lilac leads; mint carries the eco signal.
+   ========================================================================== */
+
+@theme {
+  /* --- Lilac (primary) --- */
+  --color-lilac-50: #f7f3ff;
+  --color-lilac-100: #efe7ff;
+  --color-lilac-200: #ded0ff;
+  --color-lilac-300: #c6aeff;
+  --color-lilac-400: #a98bfb;
+  --color-lilac-500: #8e6bf2;
+  --color-lilac-600: #7a52e0;
+  --color-lilac-700: #6540bc;
+  --color-lilac-800: #4e3193;
+  --color-lilac-900: #352161;
+  --color-lilac-950: #1d1139;
+
+  /* --- Mint (eco accent) --- */
+  --color-mint-100: #dffcf4;
+  --color-mint-200: #b6f7e7;
+  --color-mint-300: #7ff0d6;
+  --color-mint-400: #4fe3c4;
+  --color-mint-500: #22cda9;
+  --color-mint-600: #12a98b;
+
+  /* --- Orchid (warm flourish) --- */
+  --color-orchid-200: #ffd6f2;
+  --color-orchid-300: #f9b4e6;
+  --color-orchid-400: #ee8dd6;
+
+  /* --- Ink / surface --- */
+  --color-ink: #1d1139;
+  --color-ink-soft: #4a3f66;
+  --color-ink-muted: #6f6690;
+  --color-cloud: #fbfaff;
+
+  /* --- Type --- */
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--font-heading), var(--font-body), ui-sans-serif,
+    system-ui, sans-serif;
+
+  /* --- Motion --- */
+  --ease-bubble: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* --- Elevation --- */
+  --shadow-soft: 0 2px 8px -2px rgb(78 49 147 / 0.08),
+    0 12px 32px -12px rgb(78 49 147 / 0.16);
+  --shadow-lift: 0 8px 20px -6px rgb(78 49 147 / 0.16),
+    0 32px 60px -24px rgb(78 49 147 / 0.28);
+  --shadow-glow: 0 12px 40px -8px rgb(142 107 242 / 0.45);
+}
+
+/* --------------------------------------------------------------------------
+   Base
+   -------------------------------------------------------------------------- */
+
+:root {
+  --grad-brand: linear-gradient(
+    118deg,
+    #6540bc 0%,
+    #8e6bf2 32%,
+    #b79bff 58%,
+    #93e6e4 84%,
+    #7ff0d6 100%
+  );
+  --grad-brand-soft: linear-gradient(
+    118deg,
+    #efe7ff 0%,
+    #ded0ff 40%,
+    #d3e9fb 72%,
+    #dffcf4 100%
+  );
+  --grad-ink: linear-gradient(135deg, #2a1a54 0%, #40266f 55%, #573089 100%);
+  color-scheme: light;
+}
+
+* {
+  border-color: color-mix(in oklab, var(--color-lilac-200) 60%, transparent);
+}
+
+html {
+  scroll-behavior: smooth;
+  /* Header offset for in-page anchors */
+  scroll-padding-top: 6.5rem;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: var(--color-cloud);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: clip;
+}
+
+h1,
+h2,
+h3,
+h4,
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+::selection {
+  background: var(--color-lilac-300);
+  color: var(--color-lilac-950);
+}
+
+/* Visible, on-brand focus ring for keyboard users only */
+:focus-visible {
+  outline: 3px solid var(--color-lilac-500);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* Custom scrollbar (progressive enhancement) */
+@supports (scrollbar-color: auto) {
+  html {
+    scrollbar-color: var(--color-lilac-300) transparent;
+    scrollbar-width: thin;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Utilities
+   -------------------------------------------------------------------------- */
+
+@utility container-page {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+  max-width: 80rem;
+
+  @media (width >= 40rem) {
+    padding-inline: 2rem;
+  }
+}
+
+@utility text-gradient {
+  background: var(--grad-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* Keep descenders from clipping on some engines */
+  padding-block: 0.05em;
+}
+
+@utility bg-brand-gradient {
+  background-image: var(--grad-brand);
+}
+
+@utility bg-brand-soft {
+  background-image: var(--grad-brand-soft);
+}
+
+@utility bg-ink-gradient {
+  background-image: var(--grad-ink);
+}
+
+@utility glass {
+  background: rgb(255 255 255 / 0.72);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+}
+
+/* Soft aurora mesh used behind light sections. */
+@utility mesh-soft {
+  background-color: var(--color-cloud);
+  background-image:
+    radial-gradient(
+      42rem 30rem at 12% -8%,
+      rgb(198 174 255 / 0.5),
+      transparent 65%
+    ),
+    radial-gradient(
+      34rem 26rem at 92% 6%,
+      rgb(127 240 214 / 0.38),
+      transparent 65%
+    ),
+    radial-gradient(
+      30rem 26rem at 70% 96%,
+      rgb(249 180 230 / 0.28),
+      transparent 65%
+    );
+}
+
+/* Gradient hairline border on a light card. */
+@utility ring-brand {
+  border: 1px solid transparent;
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+/* --------------------------------------------------------------------------
+   Keyframes
+   -------------------------------------------------------------------------- */
+
+@keyframes eco-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -14px, 0);
+  }
+}
+
+@keyframes eco-float-slow {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(0, -22px, 0) rotate(3deg);
+  }
+}
+
+@keyframes eco-drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(18px, -12px, 0) scale(1.06);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes eco-shine {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+@keyframes eco-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes eco-ping-ring {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.55;
+  }
+  80%,
+  100% {
+    transform: scale(2.1);
+    opacity: 0;
+  }
+}
+
+@keyframes eco-spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@utility animate-float {
+  animation: eco-float 6s var(--ease-soft) infinite;
+}
+@utility animate-float-slow {
+  animation: eco-float-slow 9s var(--ease-soft) infinite;
+}
+@utility animate-drift {
+  animation: eco-drift 12s var(--ease-soft) infinite;
+}
+@utility animate-marquee {
+  animation: eco-marquee 38s linear infinite;
+}
+@utility animate-ping-ring {
+  animation: eco-ping-ring 2.4s var(--ease-soft) infinite;
+}
+@utility animate-spin-slow {
+  animation: eco-spin-slow 26s linear infinite;
+}
+@utility animate-shine {
+  background-size: 200% auto;
+  animation: eco-shine 5s linear infinite;
+}
+
+/* --------------------------------------------------------------------------
+   Accessibility: honour reduced-motion everywhere, including canvas overlays.
+   -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Screen-reader-only helper */
+.sr-only-focusable:not(:focus):not(:focus-within) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
