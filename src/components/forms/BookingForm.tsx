@@ -108,7 +108,7 @@ export function BookingForm() {
   const [errors, setErrors] = useState<Errors>({});
   const [sent, setSent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const { pop, surge } = useBubbles();
+  const { burst } = useBubbles();
 
   const set = <K extends keyof Fields>(key: K, value: Fields[K]) => {
     setValues((v) => ({ ...v, [key]: value }));
@@ -133,12 +133,18 @@ export function BookingForm() {
     // No backend yet — point this at your booking endpoint when it exists.
     await new Promise((resolve) => setTimeout(resolve, 700));
 
+    // A completed booking is the one moment on the site that genuinely earns a
+    // celebration, tinted to the service the visitor picked. It clears itself
+    // within a few seconds like every other burst.
     const chosen = services.find((s) => s.slug === values.service);
     const colors = chosen ? [...chosen.tint, "#ffffff"] : ["#c6aeff", "#7ff0d6", "#ffffff"];
-    const origin = { x: window.innerWidth / 2, y: window.innerHeight * 0.55 };
 
-    pop(origin.x, origin.y, { colors, count: 30, power: 1.5, radius: 52 });
-    surge({ colors, amount: 34, duration: 8, origin });
+    burst(window.innerWidth / 2, window.innerHeight * 0.55, {
+      colors,
+      count: 26,
+      spread: 150,
+      splash: true,
+    });
 
     setSubmitting(false);
     setSent(true);
@@ -347,7 +353,6 @@ export function BookingForm() {
                 size="lg"
                 disabled={submitting}
                 icon={<IconArrowRight className="size-3.5" />}
-                pop={false}
               >
                 {submitting ? "Sending…" : "Send my request"}
               </Button>

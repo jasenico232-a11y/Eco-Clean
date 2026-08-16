@@ -35,7 +35,7 @@ export type Service = {
   title: string;
   short: string;
   description: string;
-  /** Drives the bubble surge tint when the card is activated. */
+  /** Drives the bubble burst tint when the card is activated. */
   tint: [string, string];
   icon: ServiceIcon;
   price: string;

@@ -20,7 +20,7 @@ import { useBubbles } from "@/components/bubbles/BubbleProvider";
 export function Services({
   heading = "Cleaning services shaped around how you actually live",
   eyebrow = "What we do",
-  description = "Six core services, one standard. Tap any card to see exactly what is included — and to send a wave of bubbles across the page while you are at it.",
+  description = "Six core services, one standard. Tap any card to see exactly what is included, and what it costs before anyone sets foot in your space.",
   compact = false,
 }: {
   heading?: string;
@@ -29,29 +29,21 @@ export function Services({
   compact?: boolean;
 }) {
   const [active, setActive] = useState<string | null>(null);
-  const { pop, surge } = useBubbles();
+  const { burst } = useBubbles();
 
   const activate = (service: Service, e: MouseEvent<HTMLElement>) => {
     const isOpening = active !== service.slug;
     setActive(isOpening ? service.slug : null);
     if (!isOpening) return;
 
-    const origin = { x: e.clientX, y: e.clientY };
-
-    // Immediate burst under the finger…
-    pop(origin.x, origin.y, {
+    // Selecting a service is a real choice, so it earns a bubble moment in
+    // that service's own colours. It releases from the card and clears itself
+    // within a few seconds — it is punctuation, not atmosphere.
+    burst(e.clientX, e.clientY, {
       colors: [...service.tint, "#ffffff"],
-      count: 20,
-      power: 1.25,
-      radius: 34,
-    });
-
-    // …then flood the whole page in this service's colours.
-    surge({
-      colors: [...service.tint, "#ffffff"],
-      amount: 26,
-      duration: 7,
-      origin,
+      count: 14,
+      spread: 60,
+      splash: true,
     });
   };
 
@@ -78,7 +70,7 @@ export function Services({
 
         <p className="mt-6 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-semibold text-lilac-700 ring-1 ring-lilac-200">
           <IconBubble className="size-4" />
-          Tap a card to release its bubbles
+          Tap a card for full details and pricing
         </p>
 
         <RevealGroup
@@ -199,7 +191,8 @@ export function Services({
                             href="/contact#booking"
                             size="sm"
                             className="mt-5"
-                            popColors={[...service.tint, "#ffffff"]}
+                            // Still needed: the card itself is the toggle, so
+                            // without this the CTA would also collapse it.
                             onClick={(e) => e.stopPropagation()}
                           >
                             Book {service.title.toLowerCase()}

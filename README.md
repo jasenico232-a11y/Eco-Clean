@@ -3,9 +3,9 @@
 Marketing site for an eco-friendly cleaning company, built with Next.js 16 (App
 Router), React 19, TypeScript and Tailwind CSS v4.
 
-The signature interaction is a canvas bubble field: soap bubbles drift up across
-the whole viewport, visitors can pop them by tapping, and activating a service
-card floods the page with bubbles tinted in that service's colour.
+Interaction feedback is tiered: ordinary controls get a contained press sheen,
+meaningful choices get a short-lived cloud of soap bubbles in the relevant
+brand colour, and nothing is ambient — the screen always returns to clean.
 
 ## Getting started
 
@@ -42,52 +42,74 @@ The signature gradient runs
 
 ## Bubble system
 
-Four files under `src/components/bubbles/`:
+### Feedback tiers
+
+Click feedback is deliberately **not** uniform. Applying the same effect to
+every control makes it read as decoration rather than as a response, so effort
+scales with the weight of the action:
+
+| Tier | Where | Effect |
+| ---- | ----- | ------ |
+| Ordinary | Every `<Button>`, nav links, FAQ rows | Press sheen inside the control; no particles |
+| Selection | Service card activated | Short bubble cloud in that service's tint |
+| Milestone | Booking sent, newsletter joined | Larger bubble cloud with a splash |
+
+**Tier 1 — the sheen.** A radial wipe expands from the exact point of contact,
+clipped by the button's own border radius (`eco-sheen` in `globals.css`, driven
+by `Button.tsx`). Because it is bounded by the control and tinted per variant,
+it reads as the *surface reacting to a press* rather than as particles thrown
+over the top of the UI. Keyboard activation reports `(0,0)`, so those start
+from the centre instead.
+
+**Tiers 2–3 — bubbles.** Reserved for moments that earn them.
+
+### Bubbles
+
+Three files under `src/components/bubbles/`:
 
 - **`engine.ts`** — framework-free canvas simulation. Owns the bubble pool,
   droplet and shock-ring particles, hit testing and pointer repulsion.
 - **`BubbleField.tsx`** — mounts the canvas and wires window events.
-- **`BubbleProvider.tsx`** — React context exposing `pop`, `popFrom` and
-  `surge` to any client component via `useBubbles()`.
-
-### Triggering effects
+- **`BubbleProvider.tsx`** — React context exposing `burst` and `burstFrom` to
+  any client component via `useBubbles()`.
 
 ```tsx
-const { pop, popFrom, surge } = useBubbles();
+const { burst, burstFrom } = useBubbles();
 
-// Burst at a point
-pop(x, y, { colors: ["#7ff0d6"], count: 20, power: 1.3, radius: 40 });
+// A cloud at a point — every bubble self-expires
+burst(x, y, { colors: ["#22cda9", "#b6f7e7"], count: 14, spread: 60, splash: true });
 
-// Burst from an element (or the pointer that hit it)
-popFrom(el, { event: { clientX, clientY } });
-
-// Flood the screen — used when a service card is activated
-surge({ colors: ["#22cda9", "#b6f7e7"], amount: 26, duration: 7, origin });
+// Same, centred on an element (or the pointer that activated it)
+burstFrom(el, { event: { clientX, clientY } });
 ```
 
-Every method no-ops safely when the field is not mounted, so components never
-need to guard.
+Both no-op safely when the field is not mounted, so components never guard.
 
-Where the effects fire today: every `<Button>` click, main-nav links, service
-cards (pop **and** tinted surge), FAQ rows, the CTA band, newsletter signup and
-booking-form submission.
+**Nothing is ambient.** There is no idle bubble population. Every bubble is
+born from a `burst()` call carrying its own lifetime (2.4–4.6s), and ends by
+either popping into a ring and droplets or drifting out — the mix is
+randomised per bubble so the finish never looks like a synchronised
+switch-off. The screen is guaranteed to return to clean within ~5 seconds of
+the last trigger.
 
 ### Why the canvas never blocks the UI
 
-The canvas is full-viewport and sits at `z-40`, above page content — that is
-what makes bubbles appear to drift *across* the page rather than behind it. It
-is also `pointer-events: none`, so it can never swallow a click. Popping works
-by hit-testing window-level `pointerdown` events against the bubble pool
-instead. A bubble drifting over a button is poppable *and* the button still
-works.
+The canvas is full-viewport at `z-40`, above page content, so bubbles pass
+*across* the page rather than behind it. It is `pointer-events: none`, so it
+can never swallow a click — popping works by hit-testing window-level
+`pointerdown` events instead. A bubble over a button is poppable *and* the
+button still works.
 
 ### Performance
 
+- **An idle page costs nothing.** The render loop is parked whenever the screen
+  is clean and only wakes on a burst; pointer handlers bail out early via
+  `engine.isActive()` when there is nothing to move.
 - Bubble bodies are pre-rendered once per tint into offscreen sprites and
   blitted with `drawImage` — no per-frame gradient allocation.
-- Device pixel ratio capped at 2; population scales with viewport area and
-  halves on coarse-pointer devices. Hard ceilings of 90 bubbles / 260 droplets.
-- The rAF loop parks itself when the tab is hidden, and delta time is clamped so
+- Device pixel ratio capped at 2; burst sizes scale down on coarse-pointer
+  devices. Hard ceilings of 64 bubbles / 220 droplets.
+- The loop also parks when the tab is hidden, and delta time is clamped so
   returning to a backgrounded tab does not teleport the simulation.
 - All pages are statically prerendered; there are no image requests at all
   (see below).
@@ -103,8 +125,8 @@ and React fails hydration. `reducedMotion="user"` handles it inside Framer
 Motion instead: transform animations are suppressed while opacity still
 resolves, so revealed content always ends up visible and the markup is identical
 either way. CSS keyframe animations are neutralised separately by the
-`prefers-reduced-motion` block in `globals.css`, and the bubble engine drops its
-ambient population entirely.
+`prefers-reduced-motion` block in `globals.css`; the bubble engine suppresses
+bursts entirely, and the press sheen is hidden via `motion-reduce:hidden`.
 
 `useReducedMotion()` is still fine for effect-only logic — autoplay timers,
 pointer listeners, the stat count-up — where it does not change what is

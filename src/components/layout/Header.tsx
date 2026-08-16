@@ -17,13 +17,11 @@ import {
 } from "@/components/ui/Icons";
 import { nav, site } from "@/lib/site";
 import { cn } from "@/lib/utils";
-import { useBubbles } from "@/components/bubbles/BubbleProvider";
 
 export function Header() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
-  const { popFrom } = useBubbles();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -117,15 +115,6 @@ export function Header() {
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    onClick={(e) =>
-                      popFrom(e.currentTarget, {
-                        event: { clientX: e.clientX, clientY: e.clientY },
-                        count: 8,
-                        radius: 18,
-                        power: 0.7,
-                        colors: ["#c6aeff", "#7ff0d6"],
-                      })
-                    }
                     className={cn(
                       "relative rounded-full px-4 py-2 text-[0.94rem] font-semibold transition-colors duration-300",
                       isActive(item.href)

@@ -2,18 +2,22 @@
 
 import { createContext, useCallback, useContext, useMemo, useRef } from "react";
 import type { ReactNode } from "react";
-import type { BubbleEngine, PopOptions, SurgeOptions } from "./engine";
+import type { BubbleEngine, BurstOptions } from "./engine";
+
+type BurstArgs = Omit<BurstOptions, "x" | "y">;
 
 type BubbleApi = {
-  /** Burst at viewport coordinates. */
-  pop: (x: number, y: number, options?: PopOptions) => void;
-  /** Burst from the centre of an element (or the point of a pointer event). */
-  popFrom: (
+  /**
+   * Release a short-lived cloud of bubbles at a point. Reserved for moments
+   * that genuinely earn it — a service selected, a booking sent. Everything
+   * clears itself within a few seconds.
+   */
+  burst: (x: number, y: number, options?: BurstArgs) => void;
+  /** Same, centred on an element (or the pointer that activated it). */
+  burstFrom: (
     target: Element | null | undefined,
-    options?: PopOptions & { event?: { clientX: number; clientY: number } },
+    options?: BurstArgs & { event?: { clientX: number; clientY: number } },
   ) => void;
-  /** Flood the screen with tinted bubbles. */
-  surge: (options?: SurgeOptions) => void;
   /** Called by BubbleField to hand the live engine to the tree. */
   register: (engine: BubbleEngine | null) => void;
 };
@@ -21,9 +25,8 @@ type BubbleApi = {
 const noop = () => {};
 
 const BubbleContext = createContext<BubbleApi>({
-  pop: noop,
-  popFrom: noop,
-  surge: noop,
+  burst: noop,
+  burstFrom: noop,
   register: noop,
 });
 
@@ -34,16 +37,17 @@ export function BubbleProvider({ children }: { children: ReactNode }) {
     engineRef.current = engine;
   }, []);
 
-  const pop = useCallback((x: number, y: number, options?: PopOptions) => {
-    engineRef.current?.pop(x, y, options);
+  const burst = useCallback((x: number, y: number, options?: BurstArgs) => {
+    engineRef.current?.burst({ ...options, x, y });
   }, []);
 
-  const popFrom = useCallback<BubbleApi["popFrom"]>((target, options) => {
+  const burstFrom = useCallback<BubbleApi["burstFrom"]>((target, options) => {
     const engine = engineRef.current;
     if (!engine) return;
 
-    // Prefer the actual pointer location — popping under the finger feels
-    // direct. Keyboard activation has no coordinates, so fall back to centre.
+    // Prefer the actual pointer location — bubbles rising from under the
+    // finger feel direct. Keyboard activation has no coordinates, so fall
+    // back to the element's centre.
     let x = options?.event?.clientX;
     let y = options?.event?.clientY;
 
@@ -54,16 +58,12 @@ export function BubbleProvider({ children }: { children: ReactNode }) {
       y = rect.top + rect.height / 2;
     }
 
-    engine.pop(x, y, options);
-  }, []);
-
-  const surge = useCallback((options?: SurgeOptions) => {
-    engineRef.current?.surge(options);
+    engine.burst({ ...options, x, y });
   }, []);
 
   const value = useMemo<BubbleApi>(
-    () => ({ pop, popFrom, surge, register }),
-    [pop, popFrom, surge, register],
+    () => ({ burst, burstFrom, register }),
+    [burst, burstFrom, register],
   );
 
   return (

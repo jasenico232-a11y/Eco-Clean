@@ -67,7 +67,7 @@ export default function ServicesPage() {
       <Services
         eyebrow="Our services"
         heading="Choose your clean"
-        description="Tap any card for the full inclusion list. Each one releases its own colour of bubbles across the page — because why not."
+        description="Tap any card for the full inclusion list, the starting price and how long a typical visit takes."
       />
 
       {/* --------------------------------------------------------- promises */}

@@ -4,11 +4,8 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import { IconArrowRight, IconPhone, IconSparkle } from "@/components/ui/Icons";
 import { site } from "@/lib/site";
-import { useBubbles } from "@/components/bubbles/BubbleProvider";
 
 export function CtaBand() {
-  const { surge, pop } = useBubbles();
-
   return (
     <section className="relative bg-white py-16 lg:py-24">
       <div className="container-page">
@@ -17,21 +14,10 @@ export function CtaBand() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          onClick={(e) => {
-            // Anywhere on the band releases a celebratory wave.
-            surge({
-              colors: ["#ffffff", "#7ff0d6", "#c6aeff", "#f9b4e6"],
-              amount: 20,
-              duration: 6,
-              origin: { x: e.clientX, y: e.clientY },
-            });
-            pop(e.clientX, e.clientY, {
-              colors: ["#ffffff", "#7ff0d6"],
-              count: 14,
-              radius: 28,
-            });
-          }}
-          className="relative isolate cursor-pointer overflow-hidden rounded-[2rem] bg-brand-gradient px-6 py-14 shadow-[var(--shadow-lift)] sm:rounded-[2.5rem] sm:px-12 lg:px-16 lg:py-20"
+          // The band is a container, not a control — clicking dead space used
+          // to fire an effect, which made the whole section feel falsely
+          // interactive. The CTAs inside carry the affordance now.
+          className="relative isolate overflow-hidden rounded-[2rem] bg-brand-gradient px-6 py-14 shadow-[var(--shadow-lift)] sm:rounded-[2.5rem] sm:px-12 lg:px-16 lg:py-20"
         >
           <div
             aria-hidden="true"
@@ -67,7 +53,6 @@ export function CtaBand() {
                 size="lg"
                 variant="mint"
                 icon={<IconArrowRight className="size-3.5" />}
-                onClick={(e) => e.stopPropagation()}
               >
                 Book a cleaning now
               </Button>
@@ -77,7 +62,6 @@ export function CtaBand() {
                 size="lg"
                 variant="ghost"
                 icon={<IconPhone className="size-3.5" />}
-                onClick={(e) => e.stopPropagation()}
               >
                 {site.phone}
               </Button>

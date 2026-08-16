@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useCallback, useRef, useState } from "react";
 import type { MouseEvent, ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import { useBubbles } from "@/components/bubbles/BubbleProvider";
 
 type Variant = "primary" | "secondary" | "ghost" | "dark" | "mint";
 type Size = "sm" | "md" | "lg";
@@ -15,10 +15,6 @@ type BaseProps = {
   className?: string;
   /** Leading pill-icon, as seen on the reference layout's CTAs. */
   icon?: ReactNode;
-  /** Tint for the bubble burst fired on click. */
-  popColors?: string[];
-  /** Set false for destructive/utility buttons where a burst would be noise. */
-  pop?: boolean;
   fullWidth?: boolean;
 };
 
@@ -39,7 +35,7 @@ type ButtonProps = BaseProps & {
 };
 
 const base =
-  "group relative inline-flex select-none items-center justify-center gap-2.5 rounded-full font-semibold " +
+  "group relative isolate inline-flex select-none items-center justify-center gap-2.5 overflow-hidden rounded-full font-semibold " +
   "transition-[transform,box-shadow,background-color,color] duration-300 ease-[var(--ease-bubble)] " +
   "active:scale-[0.97] disabled:pointer-events-none disabled:opacity-55";
 
@@ -60,13 +56,16 @@ const sizes: Record<Size, string> = {
   lg: "px-7 py-3.5 text-base",
 };
 
-const defaultPop: Record<Variant, string[]> = {
-  primary: ["#c6aeff", "#a98bfb", "#ffffff"],
-  secondary: ["#8e6bf2", "#c6aeff", "#ded0ff"],
-  ghost: ["#ffffff", "#ded0ff", "#7ff0d6"],
-  dark: ["#a98bfb", "#7ff0d6", "#ffffff"],
-  mint: ["#7ff0d6", "#22cda9", "#ffffff"],
+/** Sheen tint per variant — light surfaces need a lilac wash, not white. */
+const sheen: Record<Variant, string> = {
+  primary: "rgba(255,255,255,0.85)",
+  secondary: "rgba(142,107,242,0.5)",
+  ghost: "rgba(255,255,255,0.8)",
+  dark: "rgba(169,139,251,0.75)",
+  mint: "rgba(255,255,255,0.9)",
 };
+
+type Sheen = { id: number; x: number; y: number; size: number };
 
 export function Button(props: AnchorProps | ButtonProps) {
   const {
@@ -75,12 +74,41 @@ export function Button(props: AnchorProps | ButtonProps) {
     size = "md",
     className,
     icon,
-    popColors,
-    pop = true,
     fullWidth,
   } = props;
 
-  const { popFrom } = useBubbles();
+  const [sheens, setSheens] = useState<Sheen[]>([]);
+  const nextId = useRef(0);
+
+  /**
+   * Press feedback lives inside the control: a sheen expands from the exact
+   * point of contact and is clipped by the button's own radius. Keyboard
+   * activation reports (0,0), so those start from the centre instead.
+   */
+  const addSheen = useCallback((e: MouseEvent<HTMLElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const fromKeyboard = e.clientX === 0 && e.clientY === 0;
+
+    const x = fromKeyboard ? rect.width / 2 : e.clientX - rect.left;
+    const y = fromKeyboard ? rect.height / 2 : e.clientY - rect.top;
+
+    // Diameter that reaches the farthest corner, so the wipe always completes.
+    const size =
+      2 *
+      Math.max(
+        Math.hypot(x, y),
+        Math.hypot(rect.width - x, y),
+        Math.hypot(x, rect.height - y),
+        Math.hypot(rect.width - x, rect.height - y),
+      );
+
+    const id = nextId.current++;
+    setSheens((s) => [...s, { id, x, y, size }]);
+  }, []);
+
+  const removeSheen = useCallback((id: number) => {
+    setSheens((s) => s.filter((r) => r.id !== id));
+  }, []);
 
   const classes = cn(
     base,
@@ -90,19 +118,24 @@ export function Button(props: AnchorProps | ButtonProps) {
     className,
   );
 
-  const burst = (e: MouseEvent<HTMLElement>) => {
-    if (!pop) return;
-    popFrom(e.currentTarget, {
-      event: { clientX: e.clientX, clientY: e.clientY },
-      colors: popColors ?? defaultPop[variant],
-      count: 16,
-      power: 1.15,
-      radius: 30,
-    });
-  };
-
   const inner = (
     <>
+      {sheens.map((s) => (
+        <span
+          key={s.id}
+          aria-hidden="true"
+          onAnimationEnd={() => removeSheen(s.id)}
+          className="pointer-events-none absolute -z-10 rounded-full motion-reduce:hidden"
+          style={{
+            left: s.x,
+            top: s.y,
+            width: s.size,
+            height: s.size,
+            background: `radial-gradient(circle, ${sheen[variant]} 0%, ${sheen[variant]} 35%, transparent 70%)`,
+            animation: "eco-sheen 620ms cubic-bezier(0.22, 1, 0.36, 1) forwards",
+          }}
+        />
+      ))}
       {icon ? (
         <span
           className={cn(
@@ -122,7 +155,7 @@ export function Button(props: AnchorProps | ButtonProps) {
   if (props.href !== undefined) {
     const { href, external, onClick } = props;
     const handle = (e: MouseEvent<HTMLAnchorElement>) => {
-      burst(e);
+      addSheen(e);
       onClick?.(e);
     };
 
@@ -155,7 +188,7 @@ export function Button(props: AnchorProps | ButtonProps) {
       disabled={disabled}
       className={classes}
       onClick={(e) => {
-        burst(e);
+        addSheen(e);
         onClick?.(e);
       }}
     >

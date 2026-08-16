@@ -277,6 +277,23 @@ p {
   }
 }
 
+/* Press feedback: a soap-film sheen wiping outward from the point of contact,
+   clipped to the control that was pressed. Reads as the surface reacting,
+   rather than as particles thrown over the top of the UI. */
+@keyframes eco-sheen {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0.5;
+  }
+  70% {
+    opacity: 0.22;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+  }
+}
+
 @utility animate-float {
   animation: eco-float 6s var(--ease-soft) infinite;
 }

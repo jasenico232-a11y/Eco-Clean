@@ -15,12 +15,12 @@ import {
   IconArrowRight,
   IconBubble,
   IconLeaf,
+  IconPin,
   IconRecycle,
   IconShield,
   IconSparkle,
   IconStar,
 } from "@/components/ui/Icons";
-import { useBubbles } from "@/components/bubbles/BubbleProvider";
 
 const avatars = [
   { initials: "AB", tone: "from-lilac-400 to-lilac-600" },
@@ -32,7 +32,6 @@ const avatars = [
 export function Hero() {
   const ref = useRef<HTMLElement>(null);
   const reduce = useReducedMotion();
-  const { surge } = useBubbles();
 
   // Pointer parallax for the decorative layer.
   const mx = useMotionValue(0);
@@ -173,23 +172,10 @@ export function Hero() {
                 size="lg"
                 variant="mint"
                 icon={<IconArrowRight className="size-3.5" />}
-                popColors={["#7ff0d6", "#ffffff", "#c6aeff"]}
               >
                 Book your cleaning today
               </Button>
-              <Button
-                href="/services"
-                size="lg"
-                variant="ghost"
-                onClick={(e) =>
-                  surge({
-                    colors: ["#ffffff", "#7ff0d6", "#c6aeff"],
-                    amount: 16,
-                    duration: 6,
-                    origin: { x: e.clientX, y: e.clientY },
-                  })
-                }
-              >
+              <Button href="/services" size="lg" variant="ghost">
                 Explore our services
               </Button>
             </motion.div>
@@ -297,15 +283,16 @@ export function Hero() {
           </motion.div>
         </div>
 
-        {/* Interaction hint */}
+        {/* Service-area note. Replaces the old "tap a bubble" hint: bubbles are
+            no longer ambient, so there is nothing drifting past to invite. */}
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.4, duration: 0.9 }}
+          transition={{ delay: 1.2, duration: 0.9 }}
           className="mt-14 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-medium text-lilac-50/80 ring-1 ring-white/20 backdrop-blur-sm"
         >
-          <IconBubble className="size-4 text-mint-300" />
-          Psst — the bubbles drifting past are poppable. Go on, tap one.
+          <IconPin className="size-4 text-mint-300" />
+          Serving Reno &amp; Northern Nevada · Same-week slots usually available
         </motion.p>
       </div>
 

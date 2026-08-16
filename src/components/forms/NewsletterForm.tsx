@@ -11,7 +11,7 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 export function NewsletterForm() {
   const [email, setEmail] = useState("");
   const [state, setState] = useState<"idle" | "error" | "done">("idle");
-  const { pop, surge } = useBubbles();
+  const { burst } = useBubbles();
 
   const submit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -22,17 +22,11 @@ export function NewsletterForm() {
 
     // No backend wired yet — swap this for your ESP call.
     const rect = e.currentTarget.getBoundingClientRect();
-    pop(rect.left + rect.width / 2, rect.top + rect.height / 2, {
-      colors: ["#7ff0d6", "#4fe3c4", "#ffffff"],
-      count: 22,
-      power: 1.3,
-      radius: 40,
-    });
-    surge({
+    burst(rect.left + rect.width / 2, rect.top + rect.height / 2, {
       colors: ["#7ff0d6", "#4fe3c4", "#c6aeff"],
-      amount: 14,
-      duration: 5,
-      origin: { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 },
+      count: 10,
+      spread: 70,
+      splash: true,
     });
     setState("done");
     setEmail("");

@@ -7,11 +7,9 @@ import { Button } from "@/components/ui/Button";
 import { IconArrowRight, IconChevronDown } from "@/components/ui/Icons";
 import { faqs } from "@/lib/site";
 import { cn } from "@/lib/utils";
-import { useBubbles } from "@/components/bubbles/BubbleProvider";
 
 export function Faq() {
   const [open, setOpen] = useState<number | null>(0);
-  const { pop } = useBubbles();
 
   return (
     <section className="relative mesh-soft py-20 lg:py-28">
@@ -50,18 +48,7 @@ export function Faq() {
                     <h3>
                       <button
                         type="button"
-                        onClick={(e) => {
-                          const next = isOpen ? null : i;
-                          setOpen(next);
-                          if (next !== null) {
-                            pop(e.clientX, e.clientY, {
-                              colors: ["#c6aeff", "#7ff0d6", "#ffffff"],
-                              count: 10,
-                              radius: 22,
-                              power: 0.85,
-                            });
-                          }
-                        }}
+                        onClick={() => setOpen(isOpen ? null : i)}
                         aria-expanded={isOpen}
                         aria-controls={`faq-panel-${i}`}
                         className="flex w-full items-center justify-between gap-5 px-5 py-5 text-left sm:px-6"

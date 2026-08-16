@@ -1,25 +1,26 @@
 /**
  * Eco-Clean bubble engine.
  *
- * A dependency-free canvas simulation that renders a slow upward flow of soap
- * bubbles across the viewport. Bubbles can be popped by pointer, and the page
- * can trigger bursts (`pop`) or temporary floods (`surge`) — the latter is what
- * fires when a visitor activates a service card.
+ * Bubbles are a *moment*, not a background. There is no ambient population:
+ * the canvas is empty and the render loop is parked until something calls
+ * `burst()`, and every bubble carries its own lifetime so the screen returns
+ * to clean within ~5 seconds. Bubbles either pop (ring + droplets) or drift
+ * out as they expire.
+ *
+ * Because the loop only runs while particles are alive, an idle page costs
+ * nothing — no rAF, no canvas clears.
  *
  * Performance notes:
  *  - Bubble bodies are pre-rendered once per tint into offscreen sprites, then
  *    blitted with `drawImage`. No per-frame gradient allocation.
- *  - Device pixel ratio is capped at 2; population scales with viewport area
- *    and is halved on coarse-pointer (mobile) devices.
- *  - The loop parks itself when the tab is hidden and when reduced motion is on.
+ *  - Device pixel ratio is capped at 2; burst sizes halve on coarse-pointer
+ *    devices.
  */
 
 export type RGB = { r: number; g: number; b: number };
 
 export type EngineOptions = {
-  /** Multiplier on the auto-computed ambient bubble population. */
-  density?: number;
-  /** Skip ambient motion entirely; pops still render as a single quick ring. */
+  /** Skip bubbles entirely; bursts collapse to a single quick ring. */
   reducedMotion?: boolean;
 };
 
@@ -33,14 +34,17 @@ export type PopOptions = {
   radius?: number;
 };
 
-export type SurgeOptions = {
+export type BurstOptions = {
+  /** Origin in CSS pixels. */
+  x: number;
+  y: number;
   colors?: string[];
-  /** Extra bubbles to flood in, before density scaling. */
-  amount?: number;
-  /** Seconds the surge takes to decay. */
-  duration?: number;
-  /** Origin in CSS pixels; bubbles fan out from here instead of the bottom edge. */
-  origin?: { x: number; y: number };
+  /** Bubbles to release, before device scaling. */
+  count?: number;
+  /** Horizontal scatter of the launch point, in CSS pixels. */
+  spread?: number;
+  /** Also emit an immediate droplet splash at the origin. */
+  splash?: boolean;
 };
 
 type Bubble = {
@@ -52,13 +56,15 @@ type Bubble = {
   driftPhase: number;
   driftFreq: number;
   driftAmp: number;
-  alpha: number;
   color: string;
   /** Squash-and-stretch wobble phase. */
   wobble: number;
-  /** Transient bubbles are culled first when a surge decays. */
-  transient: boolean;
-  /** Extra velocity from a surge origin, decays to zero. */
+  /** Seconds this bubble may live for. */
+  life: number;
+  age: number;
+  /** Ends with a pop rather than drifting out. */
+  popOnExpire: boolean;
+  /** Launch impulse, decays to zero. */
   vx: number;
   vy: number;
 };
@@ -85,8 +91,14 @@ type Pop = {
 
 const DEFAULT_COLORS = ["#a98bfb", "#c6aeff", "#8e6bf2", "#7ff0d6", "#f9b4e6"];
 const MAX_DPR = 2;
-const MAX_BUBBLES = 90;
-const MAX_DROPLETS = 260;
+const MAX_BUBBLES = 64;
+const MAX_DROPLETS = 220;
+
+/** Hard ceiling on how long any bubble may stay on screen. */
+const LIFE_MIN = 2.4;
+const LIFE_MAX = 4.6;
+const FADE_IN = 0.3;
+const FADE_OUT = 0.7;
 
 function hexToRgb(hex: string): RGB {
   let h = hex.replace("#", "");
@@ -199,17 +211,10 @@ export class BubbleEngine {
   private raf = 0;
   private lastTime = 0;
   private running = false;
+  private paused = false;
   private destroyed = false;
 
-  private baseCount = 0;
-  private surgeExtra = 0;
-  private surgeDecay = 0;
-  private surgeColors: string[] | null = null;
-  private surgeOrigin: { x: number; y: number } | null = null;
-
   private pointer = { x: -9999, y: -9999, active: false };
-
-  private density: number;
   private reducedMotion: boolean;
 
   constructor(canvas: HTMLCanvasElement, options: EngineOptions = {}) {
@@ -217,7 +222,6 @@ export class BubbleEngine {
     const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) throw new Error("Canvas 2D context unavailable");
     this.ctx = ctx;
-    this.density = options.density ?? 1;
     this.reducedMotion = options.reducedMotion ?? false;
     this.resize();
   }
@@ -236,42 +240,30 @@ export class BubbleEngine {
     this.canvas.style.width = `${w}px`;
     this.canvas.style.height = `${h}px`;
     this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
-
-    // Population scales with area, then halves on touch-first devices where
-    // both the GPU budget and the screen are smaller.
-    const coarse = window.matchMedia?.("(pointer: coarse)").matches ?? false;
-    const areaUnits = (w * h) / (1440 * 900);
-    const target = Math.round(20 * areaUnits * this.density * (coarse ? 0.5 : 1));
-    this.baseCount = this.reducedMotion ? 0 : Math.max(6, Math.min(target, 34));
-
-    // Trim any bubbles now outside the viewport after a shrink.
-    this.bubbles = this.bubbles.filter((b) => b.x > -b.r && b.x < w + b.r);
   }
 
   setReducedMotion(value: boolean): void {
     this.reducedMotion = value;
-    if (value) {
-      this.bubbles = [];
-      this.surgeExtra = 0;
-    }
-    this.resize();
+    if (value) this.clear();
   }
 
-  start(): void {
-    if (this.running || this.destroyed) return;
-    this.running = true;
-    this.lastTime = performance.now();
-    this.raf = requestAnimationFrame(this.frame);
+  /** Suspend rendering (tab hidden). Particles resume where they left off. */
+  setPaused(value: boolean): void {
+    this.paused = value;
+    if (value) this.stopLoop();
+    else if (this.hasWork()) this.startLoop();
   }
 
-  stop(): void {
-    this.running = false;
-    if (this.raf) cancelAnimationFrame(this.raf);
-    this.raf = 0;
+  clear(): void {
+    this.bubbles = [];
+    this.droplets = [];
+    this.pops = [];
+    this.stopLoop();
+    this.ctx.clearRect(0, 0, this.width, this.height);
   }
 
   destroy(): void {
-    this.stop();
+    this.stopLoop();
     this.destroyed = true;
     this.bubbles = [];
     this.droplets = [];
@@ -287,9 +279,14 @@ export class BubbleEngine {
     this.pointer.active = active;
   }
 
+  /** True while anything is on screen — used to skip idle pointer work. */
+  isActive(): boolean {
+    return this.hasWork();
+  }
+
   /**
    * Pop the topmost bubble under the given point, if any.
-   * Returns true when a bubble was hit, so callers can skip their own effect.
+   * Returns true when a bubble was hit.
    */
   hitTest(x: number, y: number): boolean {
     for (let i = this.bubbles.length - 1; i >= 0; i--) {
@@ -302,9 +299,9 @@ export class BubbleEngine {
         this.bubbles.splice(i, 1);
         this.pop(b.x, b.y, {
           colors: [b.color],
-          count: Math.round(6 + b.r / 5),
+          count: Math.round(5 + b.r / 6),
           radius: b.r * 1.5,
-          power: 1,
+          power: 0.9,
         });
         return true;
       }
@@ -312,7 +309,7 @@ export class BubbleEngine {
     return false;
   }
 
-  /** Emit a burst of droplets and an expanding shock ring at a point. */
+  /** Emit droplets and an expanding shock ring at a point. */
   pop(x: number, y: number, options: PopOptions = {}): void {
     if (this.destroyed) return;
     const colors = options.colors?.length ? options.colors : DEFAULT_COLORS;
@@ -324,49 +321,110 @@ export class BubbleEngine {
       y,
       r: options.radius ?? 26,
       age: 0,
-      life: this.reducedMotion ? 0.32 : 0.55,
+      life: this.reducedMotion ? 0.3 : 0.55,
       color: colors[0],
     });
 
-    if (this.droplets.length > MAX_DROPLETS) return;
-
-    for (let i = 0; i < count; i++) {
-      const angle = (Math.PI * 2 * i) / count + rand(-0.25, 0.25);
-      const speed = rand(70, 190) * power;
-      this.droplets.push({
-        x,
-        y,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed - rand(10, 50),
-        r: rand(1.8, 5.4),
-        life: rand(0.45, 0.85),
-        age: 0,
-        color: pick(colors),
-      });
+    if (this.droplets.length < MAX_DROPLETS) {
+      for (let i = 0; i < count; i++) {
+        const angle = (Math.PI * 2 * i) / count + rand(-0.25, 0.25);
+        const speed = rand(70, 190) * power;
+        this.droplets.push({
+          x,
+          y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - rand(10, 50),
+          r: rand(1.8, 5.4),
+          life: rand(0.45, 0.85),
+          age: 0,
+          color: pick(colors),
+        });
+      }
     }
+
+    this.wake();
   }
 
   /**
-   * Flood the screen with extra bubbles in the given palette. Used when a
-   * service card is activated so the whole page reacts to the choice.
+   * Release a short-lived cloud of bubbles from a point. Every bubble expires
+   * within a few seconds, so the screen always returns to clean on its own.
    */
-  surge(options: SurgeOptions = {}): void {
+  burst(options: BurstOptions): void {
     if (this.destroyed || this.reducedMotion) return;
-    const coarse = window.matchMedia?.("(pointer: coarse)").matches ?? false;
-    const amount = Math.round((options.amount ?? 22) * (coarse ? 0.55 : 1));
-    this.surgeColors = options.colors?.length ? options.colors : null;
-    this.surgeOrigin = options.origin ?? null;
-    this.surgeExtra = Math.min(this.surgeExtra + amount, MAX_BUBBLES - this.baseCount);
-    this.surgeDecay = this.surgeExtra / (options.duration ?? 7);
 
-    // Seed a few immediately so the reaction feels instant rather than ramped.
-    const instant = Math.min(6, amount);
-    for (let i = 0; i < instant; i++) {
-      this.bubbles.push(this.spawn(true));
+    const coarse = window.matchMedia?.("(pointer: coarse)").matches ?? false;
+    const count = Math.min(
+      Math.round((options.count ?? 14) * (coarse ? 0.6 : 1)),
+      MAX_BUBBLES - this.bubbles.length,
+    );
+    const colors = options.colors?.length ? options.colors : DEFAULT_COLORS;
+    const spread = options.spread ?? 46;
+
+    if (options.splash) {
+      this.pop(options.x, options.y, {
+        colors,
+        count: 14,
+        power: 1.1,
+        radius: 30,
+      });
     }
+
+    for (let i = 0; i < count; i++) {
+      // Fan upward and outward from the trigger point.
+      const angle = rand(-Math.PI * 0.88, -Math.PI * 0.12);
+      const impulse = rand(50, 170);
+
+      this.bubbles.push({
+        x: options.x + rand(-spread, spread),
+        y: options.y + rand(-14, 14),
+        r: rand(7, 26),
+        speed: rand(26, 62),
+        driftPhase: rand(0, Math.PI * 2),
+        driftFreq: rand(0.3, 0.9),
+        driftAmp: rand(10, 32),
+        color: pick(colors),
+        wobble: rand(0, Math.PI * 2),
+        life: rand(LIFE_MIN, LIFE_MAX),
+        age: 0,
+        // Most pop at the end; the rest drift out. Mixing the two stops the
+        // finish from looking like a synchronised switch-off.
+        popOnExpire: Math.random() < 0.6,
+        vx: Math.cos(angle) * impulse,
+        vy: Math.sin(angle) * impulse,
+      });
+    }
+
+    this.wake();
   }
 
   // ------------------------------------------------------------------ internal
+
+  private hasWork(): boolean {
+    return (
+      this.bubbles.length > 0 ||
+      this.droplets.length > 0 ||
+      this.pops.length > 0
+    );
+  }
+
+  /** Start the loop on demand — it does not run while the screen is clean. */
+  private wake(): void {
+    if (this.destroyed || this.paused || this.running) return;
+    this.startLoop();
+  }
+
+  private startLoop(): void {
+    if (this.running || this.destroyed) return;
+    this.running = true;
+    this.lastTime = performance.now();
+    this.raf = requestAnimationFrame(this.frame);
+  }
+
+  private stopLoop(): void {
+    this.running = false;
+    if (this.raf) cancelAnimationFrame(this.raf);
+    this.raf = 0;
+  }
 
   private sprite(color: string): HTMLCanvasElement {
     let s = this.sprites.get(color);
@@ -377,48 +435,12 @@ export class BubbleEngine {
     return s;
   }
 
-  private palette(): string[] {
-    return this.surgeColors ?? DEFAULT_COLORS;
-  }
-
-  private spawn(transient: boolean): Bubble {
-    const colors = this.palette();
-    const r = rand(7, 30);
-    const origin = transient ? this.surgeOrigin : null;
-
-    let x: number;
-    let y: number;
-    let vx = 0;
-    let vy = 0;
-
-    if (origin) {
-      // Fan out from the element that triggered the surge.
-      const angle = rand(-Math.PI * 0.9, -Math.PI * 0.1);
-      const burst = rand(60, 200);
-      x = origin.x + rand(-40, 40);
-      y = origin.y + rand(-16, 16);
-      vx = Math.cos(angle) * burst;
-      vy = Math.sin(angle) * burst;
-    } else {
-      x = rand(-40, this.width + 40);
-      y = this.height + r + rand(0, this.height * 0.5);
-    }
-
-    return {
-      x,
-      y,
-      r,
-      speed: rand(16, 52) * (transient ? 1.35 : 1),
-      driftPhase: rand(0, Math.PI * 2),
-      driftFreq: rand(0.25, 0.75),
-      driftAmp: rand(8, 30),
-      alpha: 0,
-      color: pick(colors),
-      wobble: rand(0, Math.PI * 2),
-      transient,
-      vx,
-      vy,
-    };
+  /** Fade envelope: in at birth, out before expiry. */
+  private alphaFor(b: Bubble): number {
+    const inA = Math.min(b.age / FADE_IN, 1);
+    const remaining = b.life - b.age;
+    const outA = Math.min(remaining / FADE_OUT, 1);
+    return Math.max(0, Math.min(inA, outA)) * 0.82;
   }
 
   private frame = (now: number): void => {
@@ -430,45 +452,41 @@ export class BubbleEngine {
     this.update(dt);
     this.draw();
 
+    if (!this.hasWork()) {
+      // Screen is clean again — park the loop until the next burst.
+      this.stopLoop();
+      this.ctx.clearRect(0, 0, this.width, this.height);
+      return;
+    }
+
     this.raf = requestAnimationFrame(this.frame);
   };
 
   private update(dt: number): void {
-    // Decay any active surge back toward the ambient population.
-    if (this.surgeExtra > 0) {
-      this.surgeExtra = Math.max(0, this.surgeExtra - this.surgeDecay * dt);
-      if (this.surgeExtra === 0) {
-        this.surgeColors = null;
-        this.surgeOrigin = null;
-      }
-    }
-
-    const target = Math.min(
-      Math.round(this.baseCount + this.surgeExtra),
-      MAX_BUBBLES,
-    );
-    if (this.bubbles.length < target) {
-      // Feed in gradually — a wall of bubbles appearing at once looks synthetic.
-      const deficit = target - this.bubbles.length;
-      const toSpawn = Math.min(deficit, Math.random() < 0.35 ? 2 : 1);
-      for (let i = 0; i < toSpawn; i++) {
-        this.bubbles.push(this.spawn(this.bubbles.length >= this.baseCount));
-      }
-    }
-
     const time = this.lastTime / 1000;
 
     for (let i = this.bubbles.length - 1; i >= 0; i--) {
       const b = this.bubbles[i];
+      b.age += dt;
 
-      // Fade in on entry so bubbles never blink into existence.
-      b.alpha = Math.min(b.alpha + dt * 1.4, b.transient ? 0.85 : 0.7);
+      if (b.age >= b.life) {
+        this.bubbles.splice(i, 1);
+        if (b.popOnExpire) {
+          this.pop(b.x, b.y, {
+            colors: [b.color],
+            count: Math.round(4 + b.r / 7),
+            radius: b.r * 1.3,
+            power: 0.7,
+          });
+        }
+        continue;
+      }
 
       b.y -= b.speed * dt;
       b.x += Math.sin(time * b.driftFreq + b.driftPhase) * b.driftAmp * dt;
       b.wobble += dt * 2.4;
 
-      // Surge impulse bleeds off into the ambient rise.
+      // Launch impulse bleeds off into the ambient rise.
       if (b.vx !== 0 || b.vy !== 0) {
         b.x += b.vx * dt;
         b.y += b.vy * dt;
@@ -495,18 +513,7 @@ export class BubbleEngine {
 
       const offTop = b.y + b.r < -10;
       const offSide = b.x < -b.r - 80 || b.x > this.width + b.r + 80;
-      if (offTop || offSide) {
-        this.bubbles.splice(i, 1);
-      }
-    }
-
-    // Cull surplus transients once a surge has decayed away.
-    if (this.bubbles.length > target + 4) {
-      for (let i = this.bubbles.length - 1; i >= 0 && this.bubbles.length > target; i--) {
-        if (this.bubbles[i].transient && this.bubbles[i].y < this.height * 0.4) {
-          this.bubbles.splice(i, 1);
-        }
-      }
+      if (offTop || offSide) this.bubbles.splice(i, 1);
     }
 
     for (let i = this.droplets.length - 1; i >= 0; i--) {
@@ -534,7 +541,6 @@ export class BubbleEngine {
     ctx.clearRect(0, 0, this.width, this.height);
 
     for (const b of this.bubbles) {
-      // Skip anything fully outside the viewport horizontally.
       if (b.x + b.r < 0 || b.x - b.r > this.width) continue;
 
       const sprite = this.sprite(b.color);
@@ -542,7 +548,7 @@ export class BubbleEngine {
       const sx = b.r * 2 * (1 + Math.sin(b.wobble) * 0.045);
       const sy = b.r * 2 * (1 - Math.sin(b.wobble) * 0.045);
 
-      ctx.globalAlpha = b.alpha;
+      ctx.globalAlpha = this.alphaFor(b);
       ctx.drawImage(sprite, b.x - sx / 2, b.y - sy / 2, sx, sy);
     }
 
