@@ -530,3 +530,71 @@ export const faqs: { q: L; a: L }[] = [
     },
   },
 ];
+
+/**
+ * §A5 product standard. What actually goes on your surfaces — the certified
+ * concentrates carried on every van, grouped by purpose. Compliance note at
+ * the top of this file applies: certification facts only, never unqualified
+ * "non-toxic" or "eco-friendly".
+ */
+export const products: {
+  icon: ServiceIcon;
+  name: L;
+  use: L;
+  tint: [string, string];
+}[] = [
+  {
+    icon: "deep",
+    name: { fr: "Dégraissant cuisine", en: "Kitchen degreaser" },
+    use: {
+      fr: "Plans de travail, façades d'électroménagers, hottes et dosserets. Décolle la graisse cuite sans laisser de film.",
+      en: "Countertops, appliance fronts, range hoods and backsplashes. Lifts baked-on grease without leaving a film.",
+    },
+    tint: ["#a98bfb", "#ded0ff"],
+  },
+  {
+    icon: "window",
+    name: { fr: "Vitres et miroirs", en: "Glass & mirror" },
+    use: {
+      fr: "Fenêtres intérieures, miroirs et surfaces vitrées. Fini sans traînée, appliqué au système à eau purifiée.",
+      en: "Interior windows, mirrors and glass surfaces. Streak-free finish, applied with our purified-water system.",
+    },
+    tint: ["#6540bc", "#93e6e4"],
+  },
+  {
+    icon: "office",
+    name: { fr: "Salle de bain et calcaire", en: "Bathroom & limescale" },
+    use: {
+      fr: "Céramique, coulis, robinetterie et traitement du calcaire. Chiffons rouges réservés, jamais utilisés ailleurs.",
+      en: "Tile, grout, fixtures and limescale treatment. Red cloths reserved for this, never used elsewhere.",
+    },
+    tint: ["#22cda9", "#b6f7e7"],
+  },
+  {
+    icon: "home",
+    name: { fr: "Entretien des planchers", en: "Floor care" },
+    use: {
+      fr: "Bois, stratifié, vinyle et céramique, adapté à chaque revêtement. Appliqué au système de vadrouille à plat.",
+      en: "Wood, laminate, vinyl and tile, matched to each surface. Applied with our flat-mop system.",
+    },
+    tint: ["#ee8dd6", "#ffd6f2"],
+  },
+  {
+    icon: "leaf",
+    name: { fr: "Désinfectant", en: "Disinfectant" },
+    use: {
+      fr: "Points de contact et surfaces à haut passage. Formule biodégradable, à faible COV, utilisée dans notre programme de désinfection.",
+      en: "Touchpoints and high-traffic surfaces. A biodegradable, low-VOC formula used in our touchpoint disinfection programme.",
+    },
+    tint: ["#12a98b", "#7ff0d6"],
+  },
+  {
+    icon: "leaf",
+    name: { fr: "Gamme sans parfum", en: "Fragrance-free line" },
+    use: {
+      fr: "Toute la gamme ci-dessus est offerte sans parfum pour les cliniques et les personnes sensibles. À demander à la soumission.",
+      en: "The whole range above is available fragrance-free for clinics and sensitive people. Just ask when you book.",
+    },
+    tint: ["#7a52e0", "#c6aeff"],
+  },
+];
